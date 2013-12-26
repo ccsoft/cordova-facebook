@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	id="com.ccsoft.plugin.CordovaFacebook"
+	version="1.0.0">
+
+	<name>CordovaFacebook</name>
+  <description>Cordova plugin that handles Facebook integration in mobile apps.</description>
+  <author>CCSoft</author>
+  <keywords>facebook,cordova,ccsoft</keywords>
+  <license>Apache 2.0 License</license>
+
+    <engines>
+      <engine name="cordova" version=">=3.0.0" />
+    </engines>
+  
+	<asset src="www/CordovaFacebook.js" target="plugins/CordovaFacebook.js" />
+
+	<!-- android -->
+	<platform name="android">
+    
+		<source-file src="src/android/CordovaFacebook.java"
+				target-dir="src/com/ccsoft/plugin" />
+    
+		<config-file target="AndroidManifest.xml" parent="/*/application">
+      <activity android:label="@string/app_name" android:name="com.facebook.LoginActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar" />			
+		</config-file>
+		
+		<config-file target="config.xml" parent="/*">
+			<feature name="CordovaFacebook">
+        <param name="android-package" value="com.ccsoft.plugin.CordovaFacebook" />
+      </feature>
+				
+		</config-file>
+
+	</platform>
+
+
+</plugin>
+
