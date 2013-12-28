@@ -1,5 +1,7 @@
 package com.ccsoft.plugin;
 
+import java.util.ArrayList;
+
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
@@ -17,30 +19,43 @@ public class CordovaFacebook extends CordovaPlugin {
 	
 	private final String TAG = "CordovaFacebook";
     
-	Permissions[] appPermissions = new Permissions[]
-			{
-				Permissions.BASIC_INFO
-			};
-	private final String appId = "YOUR_APP_ID";
-	private final String appNamespace = "YOUR_APP_NAMESPACE";
 	private SimpleFacebookConfiguration facebookConfiguration = null;
+	
     @Override
     public boolean execute(String action, JSONArray args,
 			final CallbackContext callbackContext) throws JSONException {
     	Log.d(TAG, "action:" + action);
     	cordova.setActivityResultCallback(this);
-    
-    	if(facebookConfiguration == null) {
+    	
+    	if (action.equals("init")) {
+    		JSONArray ps = args.getJSONArray(2);
+    		ArrayList<Permissions> permsArr = new ArrayList<Permissions>();
+    		for(int i=0; i<ps.length(); i++){
+    			Permissions p = Permissions.findPermission(ps.getString(i));
+    			if(p != null){
+	    			permsArr.add(p);
+    			}
+    		}
+    		if(permsArr.isEmpty()){
+    			permsArr.add(Permissions.BASIC_INFO);
+    		}
+    		Permissions[] perms = permsArr.toArray(new Permissions[permsArr.size()]);
+    		
     		facebookConfiguration = new SimpleFacebookConfiguration.Builder()
-			    .setAppId(appId)
-			    .setNamespace(appNamespace)
-			    .setPermissions(appPermissions)
+			    .setAppId(args.getString(0))
+			    .setNamespace(args.getString(1))
+			    .setPermissions(perms)
 			    .build();
 
-			SimpleFacebook.setConfiguration(facebookConfiguration);			
+			SimpleFacebook.setConfiguration(facebookConfiguration);
+			return true;
     	}
     	
-    	final SimpleFacebook mSimpleFacebook = SimpleFacebook.getInstance(cordova.getActivity());
+    	if(facebookConfiguration == null) {
+    		Log.e(TAG, "init was not called");
+    		callbackContext.error("init plugin first");
+    		return true;
+    	}
     	
     	if (action.equals("login")) {
     		// login listener
@@ -72,6 +87,7 @@ public class CordovaFacebook extends CordovaPlugin {
         	    {
         	        // change the state of the button or do whatever you want
         	        Log.i(TAG, "Logged in");
+        	        callbackContext.success("login ok");
         	        //getUserInfo(callbackContext);
         	    }
 
@@ -86,15 +102,15 @@ public class CordovaFacebook extends CordovaPlugin {
 
         	Runnable runnable = new Runnable() {
     			public void run() {
-    				Log.d(TAG, "mSimpleFacebook.login call");
+    				SimpleFacebook mSimpleFacebook = SimpleFacebook.getInstance(cordova.getActivity());
     				mSimpleFacebook.login(onLoginListener);
     			};
     		};
     		cordova.getActivity().runOnUiThread(runnable);
         	return true;
         }
-        else if (action.equals("logout")) {
-        	callbackContext.success("logout call ok");
+        if (action.equals("logout")) {
+        	callbackContext.success("logout call echo");
         	return true;
         }
         
@@ -103,7 +119,7 @@ public class CordovaFacebook extends CordovaPlugin {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	Log.w(TAG, "onActivityResult");
+    	Log.i(TAG, "onActivityResult");
     	SimpleFacebook mSimpleFacebook = SimpleFacebook.getInstance(cordova.getActivity());
         mSimpleFacebook.onActivityResult(cordova.getActivity(), requestCode, resultCode, data); 
         super.onActivityResult(requestCode, resultCode, data);
