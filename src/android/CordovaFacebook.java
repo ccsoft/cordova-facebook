@@ -6,12 +6,16 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.sromku.simple.fb.Permissions;
+import com.sromku.simple.fb.Properties;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.SimpleFacebook.OnLogoutListener;
+import com.sromku.simple.fb.SimpleFacebook.OnProfileRequestListener;
 import com.sromku.simple.fb.SimpleFacebookConfiguration;
 import com.sromku.simple.fb.SimpleFacebook.OnLoginListener;
+import com.sromku.simple.fb.entities.Profile;
 
 import android.content.Intent;
 import android.util.Log;
@@ -150,8 +154,71 @@ public class CordovaFacebook extends CordovaPlugin {
     		cordova.getActivity().runOnUiThread(runnable);
         	return true;
         }
+        if (action.equals("info")) {
+        	if(mSimpleFacebook.isLogin() == true) {
+        		getUserInfo(callbackContext);
+        	}
+        	else {
+        		callbackContext.error("not logged in"); 
+        	}
+			return true;
+        }
         
         return false;
+    }
+    
+    public void getUserInfo(final CallbackContext callbackContext) {
+    	final SimpleFacebook mSimpleFacebook = SimpleFacebook.getInstance(cordova.getActivity());
+    	OnProfileRequestListener onProfileRequestListener = new SimpleFacebook.OnProfileRequestListener()
+    	{
+    	    @Override
+    	    public void onFail(String reason)
+    	    {
+    	        // insure that you are logged in before getting the profile
+    	        Log.w(TAG, reason);
+    	        callbackContext.error(reason);
+    	    }
+
+    	    @Override
+    	    public void onException(Throwable throwable)
+    	    {
+    	        Log.e(TAG, "Bad thing happened", throwable);
+    	        callbackContext.error("exception");
+    	    }
+
+    	    @Override
+    	    public void onThinking()
+    	    {
+    	        // show progress bar or something to the user while fetching profile
+    	        Log.i(TAG, "Thinking...");
+    	    }
+
+    	    @Override
+    	    public void onComplete(Profile profile)
+    	    {
+    	        JSONObject r = new JSONObject();
+    	        try {
+					r.put("id", profile.getId());
+					r.put("name", profile.getName());
+					r.put("accessToken", mSimpleFacebook.getAccessToken());
+				} catch (JSONException e) {
+					Log.e(TAG, "Bad thing happened with profile json", e);
+					callbackContext.error("json exception");
+					return;
+				}
+    	        callbackContext.success(r);
+    	    }
+
+    	};
+    	
+    	// prepare the properties that you need
+        Properties properties = new Properties.Builder()
+            .add(Properties.ID)
+            .add(Properties.NAME)
+            .build();
+
+        // do the get profile action
+        mSimpleFacebook.getProfile(properties, onProfileRequestListener);
     }
 
     @Override
