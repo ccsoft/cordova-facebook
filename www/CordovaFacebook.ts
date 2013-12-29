@@ -6,7 +6,7 @@ module CC {
         init(successcb?: (r: any) => void, failcb?: (err: any) => void) {
             (<any>window).cordova.exec(
                 (response) => {
-                    console.log("init call successful");
+                    console.log("init call successful " + response);
                     if (successcb) successcb(response);
                 },
                 (err) => {
@@ -18,7 +18,7 @@ module CC {
         login(successcb?: (r: any) => void, failcb?: (err: any) => void) {
             (<any>window).cordova.exec(
                 (response) => {
-                    console.log("login call successful");
+                    console.log("login call successful " + response);
                     if (successcb) successcb(response);
                 },
                 (err) => {
@@ -36,6 +36,36 @@ module CC {
                 (err) => {
                     console.log(err)
             }, "CordovaFacebook", "logout", []);
+        }
+
+        info(successcb?: (r: any) => void, failcb?: (err: any) => void) {
+            (<any>window).cordova.exec(
+                (response) => {
+                    console.log("info call successful " + response);
+                    if (successcb) successcb(response);
+                },
+                (err) => {
+                    console.log("info call failed with error: " + err);
+                    if (failcb) failcb(err);
+                }, "CordovaFacebook", "info", []);
+        }
+
+        feed(name: string, webUrl: string, logoUrl: string, caption: string, description: string, successcb?: (r: any) => void, failcb?: (err: any) => void) {
+            (<any>window).cordova.exec(
+                (response) => {
+                    console.log("feed call successful: " + response.post_id);
+                    if (successcb) {
+                        if (response && response.post_id) {
+                            successcb(response.post_id);
+                        } else {
+                            successcb(null);
+                        }
+                    }
+                },
+                (err) => {
+                    console.log("feed call failed with error: " + err);
+                    if (failcb) failcb(err);
+            }, "CordovaFacebook", "feed", [name, webUrl, logoUrl, caption, description]);
         }
     }
 }

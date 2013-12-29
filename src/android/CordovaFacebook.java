@@ -13,8 +13,10 @@ import com.sromku.simple.fb.Properties;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.SimpleFacebook.OnLogoutListener;
 import com.sromku.simple.fb.SimpleFacebook.OnProfileRequestListener;
+import com.sromku.simple.fb.SimpleFacebook.OnPublishListener;
 import com.sromku.simple.fb.SimpleFacebookConfiguration;
 import com.sromku.simple.fb.SimpleFacebook.OnLoginListener;
+import com.sromku.simple.fb.entities.Feed;
 import com.sromku.simple.fb.entities.Profile;
 
 import android.content.Intent;
@@ -53,6 +55,13 @@ public class CordovaFacebook extends CordovaPlugin {
 			    .build();
 
 			SimpleFacebook.setConfiguration(facebookConfiguration);
+			
+			SimpleFacebook simpleFB = SimpleFacebook.getInstance(cordova.getActivity());
+			if(simpleFB.isLogin()) {
+				callbackContext.success(simpleFB.getAccessToken());
+			} else {
+				callbackContext.success("");
+			}
 			return true;
     	}
     	
@@ -92,7 +101,7 @@ public class CordovaFacebook extends CordovaPlugin {
         	    {
         	        // change the state of the button or do whatever you want
         	        Log.i(TAG, "Logged in");
-        	        callbackContext.success("login ok");
+        	        callbackContext.success(mSimpleFacebook.getAccessToken());
         	        //getUserInfo(callbackContext);
         	    }
 
@@ -163,6 +172,66 @@ public class CordovaFacebook extends CordovaPlugin {
         	}
 			return true;
         }
+        if (action.equals("feed")) {
+        	// create publish listener
+        	final OnPublishListener onPublishListener = new SimpleFacebook.OnPublishListener()
+        	{
+        	    @Override
+        	    public void onFail(String reason)
+        	    {
+        	        // insure that you are logged in before publishing
+        	        Log.w(TAG, reason);
+        	        callbackContext.error(reason);
+        	    }
+
+        	    @Override
+        	    public void onException(Throwable throwable)
+        	    {
+        	        Log.e(TAG, "Bad thing happened", throwable);
+        	        callbackContext.error("exception");
+        	    }
+
+        	    @Override
+        	    public void onThinking()
+        	    {
+        	        // show progress bar or something to the user while publishing
+        	        Log.i(TAG, "In progress");
+        	    }
+
+        	    @Override
+        	    public void onComplete(String postId)
+        	    {
+        	        Log.i(TAG, "Published successfully. The new post id = " + postId);
+        	        JSONObject r = new JSONObject();
+        	        try {
+    					r.put("post_id", postId);    					
+    				} catch (JSONException e) {
+    					Log.e(TAG, "Bad thing happened with profile json", e);
+    					callbackContext.error("json exception");
+    					return;
+    				}
+        	        callbackContext.success(r);        	        
+        	    }
+        	};
+
+        	// build feed
+        	final Feed feed = new Feed.Builder()
+        	    .setName(args.getString(0))
+        	    .setLink(args.getString(1))
+        	    .setPicture(args.getString(2))
+        	    .setCaption(args.getString(3))
+        	    .setDescription(args.getString(4))
+        	    .build();
+
+        	Runnable runnable = new Runnable() {
+    			public void run() {
+    				mSimpleFacebook.publish(feed, onPublishListener);
+    			};
+    		};
+    		cordova.getActivity().runOnUiThread(runnable);
+        	
+        	return true;
+        }
         
         return false;
     }
@@ -200,6 +269,7 @@ public class CordovaFacebook extends CordovaPlugin {
     	        try {
 					r.put("id", profile.getId());
 					r.put("name", profile.getName());
+					Log.i(TAG, profile.getId() + " " + profile.getName());
 					r.put("accessToken", mSimpleFacebook.getAccessToken());
 				} catch (JSONException e) {
 					Log.e(TAG, "Bad thing happened with profile json", e);
