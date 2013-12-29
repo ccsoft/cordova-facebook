@@ -9,6 +9,7 @@ import org.json.JSONException;
 
 import com.sromku.simple.fb.Permissions;
 import com.sromku.simple.fb.SimpleFacebook;
+import com.sromku.simple.fb.SimpleFacebook.OnLogoutListener;
 import com.sromku.simple.fb.SimpleFacebookConfiguration;
 import com.sromku.simple.fb.SimpleFacebook.OnLoginListener;
 
@@ -56,7 +57,7 @@ public class CordovaFacebook extends CordovaPlugin {
     		callbackContext.error("init plugin first");
     		return true;
     	}
-    	
+    	final SimpleFacebook mSimpleFacebook = SimpleFacebook.getInstance(cordova.getActivity());
     	if (action.equals("login")) {
     		// login listener
         	final OnLoginListener onLoginListener = new SimpleFacebook.OnLoginListener()
@@ -102,7 +103,6 @@ public class CordovaFacebook extends CordovaPlugin {
 
         	Runnable runnable = new Runnable() {
     			public void run() {
-    				SimpleFacebook mSimpleFacebook = SimpleFacebook.getInstance(cordova.getActivity());
     				mSimpleFacebook.login(onLoginListener);
     			};
     		};
@@ -110,7 +110,44 @@ public class CordovaFacebook extends CordovaPlugin {
         	return true;
         }
         if (action.equals("logout")) {
-        	callbackContext.success("logout call echo");
+        	// logout listener
+        	final OnLogoutListener onLogoutListener = new SimpleFacebook.OnLogoutListener()
+        	{
+        	    @Override
+        	    public void onFail(String reason)
+        	    {
+        	        Log.w(TAG, reason);
+        	        callbackContext.error(reason);
+        	    }
+
+        	    @Override
+        	    public void onException(Throwable throwable)
+        	    {
+        	        Log.e(TAG, "Bad thing happened", throwable);
+        	        callbackContext.error("exception");
+        	    }
+
+        	    @Override
+        	    public void onThinking()
+        	    {
+        	        // show progress bar or something to the user while login is happening
+        	        Log.i(TAG, "In progress");        	        
+        	    }
+
+        	    @Override
+        	    public void onLogout()
+        	    {
+        	        Log.i(TAG, "You are logged out");
+        	        callbackContext.success();
+        	    }
+        	};
+
+        	Runnable runnable = new Runnable() {
+    			public void run() {
+    				mSimpleFacebook.logout(onLogoutListener);
+    			};
+    		};
+    		cordova.getActivity().runOnUiThread(runnable);
         	return true;
         }
         
