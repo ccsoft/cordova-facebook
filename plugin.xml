@@ -40,6 +40,18 @@
 		</config-file>
 
 	</platform>
+    
+    <platform name="ios">
+        
+        <config-file target="config.xml" parent="/*">
+            <feature name="CordovaFacebook">
+                <param name="ios-package" value="CordovaFacebook" />
+            </feature>
+        </config-file>
+        <header-file src="src/ios/CordovaFacebook.h" />
+        <source-file src="src/ios/CordovaFacebook.m" />
+        
+    </platform>
 
 
 </plugin>
