@@ -67,5 +67,19 @@ module CC {
                     if (failcb) failcb(err);
             }, "CordovaFacebook", "feed", [name, webUrl, logoUrl, caption, description]);
         }
+
+        share(name: string, webUrl: string, logoUrl: string, caption: string, description: string, successcb?: () => void, failcb?: (err: any) => void) {
+            (<any>window).cordova.exec(
+                (response) => {
+                    console.log("share call successful: " + response);
+                    if (successcb) {
+                        successcb();                        
+                    }
+                },
+                (err) => {
+                    console.log("share call failed with error: " + err);
+                    if (failcb) failcb(err);
+                }, "CordovaFacebook", "share", [name, webUrl, logoUrl, caption, description]);
+        }
     }
 }
