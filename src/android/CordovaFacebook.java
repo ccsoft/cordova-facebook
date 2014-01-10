@@ -172,7 +172,7 @@ public class CordovaFacebook extends CordovaPlugin {
         	}
 			return true;
         }
-        if (action.equals("feed")) {
+        if (action.equals("feed") || action.equals("share")) {
         	// create publish listener
         	final OnPublishListener onPublishListener = new SimpleFacebook.OnPublishListener()
         	{
@@ -269,8 +269,12 @@ public class CordovaFacebook extends CordovaPlugin {
     	        try {
 					r.put("id", profile.getId());
 					r.put("name", profile.getName());
-					Log.i(TAG, profile.getId() + " " + profile.getName());
-					r.put("accessToken", mSimpleFacebook.getAccessToken());
+					r.put("email", profile.getEmail());
+					r.put("first_name", profile.getFirstName());
+					r.put("last_name", profile.getLastName());
+					r.put("link", profile.getLink());
+					r.put("locale", profile.getLocale());
+					Log.i(TAG, profile.getId() + " " + profile.getName());					
 				} catch (JSONException e) {
 					Log.e(TAG, "Bad thing happened with profile json", e);
 					callbackContext.error("json exception");
