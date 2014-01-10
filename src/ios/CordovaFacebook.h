@@ -26,6 +26,23 @@
 - (void)login:(CDVInvokedUrlCommand*)command;
 - (void)logout:(CDVInvokedUrlCommand*)command;
 - (void)info:(CDVInvokedUrlCommand*)command;
+- (void)share:(CDVInvokedUrlCommand*)command;
 - (void)feed:(CDVInvokedUrlCommand*)command;
+
++ (void)sessionStateChanged:(FBSession *)session state:(FBSessionState) state error:(NSError *)error;
++ (BOOL)isReadPermission: (NSString*) permission;
++ (BOOL)activeSessionHasPermissions:(NSArray *)permissions;
+
++ (NSMutableArray*) readPermissions;
+//+ (void)setReadPermissions:(NSMutableArray *)perms;
+
++ (NSMutableArray*) publishPermissions;
+//+ (void)setPublishPermissions:(NSMutableArray *)perms;
+
++ (NSString*) loginCallbackId;
++ (void)setLoginCallbackId:(NSString *)cb;
+
++ (id <CDVCommandDelegate>) commandDelegate;
++ (void)setCommandDelegate:(id <CDVCommandDelegate>)del;
 
 @end
