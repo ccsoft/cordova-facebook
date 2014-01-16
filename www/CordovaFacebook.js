@@ -3,7 +3,7 @@ var CC;
     var CordovaFacebook = (function () {
         function CordovaFacebook() {
         }
-        CordovaFacebook.prototype.init = function (successcb, failcb, appId, appNamespace, appPermissions) {
+        CordovaFacebook.prototype.init = function (appId, appNamespace, appPermissions, successcb, failcb) {
             if (!window.cordova) {
                 if (failcb)
                     failcb("no cordova");

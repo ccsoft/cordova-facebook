@@ -1,7 +1,7 @@
 module CC {
     export class CordovaFacebook {
         
-        init(successcb: (r: any) => void, failcb: (err: any) => void, appId: string, appNamespace: string, appPermissions: string[]) {
+        init(appId: string, appNamespace: string, appPermissions: string[], successcb?: (r: any) => void, failcb?: (err: any) => void) {
             if (!(<any>window).cordova) {
                 if (failcb) failcb("no cordova");
                 return;
