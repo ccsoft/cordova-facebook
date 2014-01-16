@@ -54,8 +54,8 @@ To remove this plugin type:
 
 ##Usage
 		
-		// Get a reference to the plugin first
-        var plugin = new CC.CordovaFacebook();
+	// Get a reference to the plugin first
+    var plugin = new CC.CordovaFacebook();
 
 The plugin has the following methods:
 
@@ -85,7 +85,9 @@ Initializes the plugin. Must be called before calling any other function.
          
 >####example
 
-			plugin.init('YOUR_FB_APP_ID', 'YOUR_FB_APP_NAME', ['basic_info', 'email', 'publish_actions'], successCallback, failureCallback);
+	plugin.init('YOUR_FB_APP_ID', 'YOUR_FB_APP_NAME', 
+		['basic_info', 'email', 'publish_actions'], 
+		successCallback, failureCallback);
 
 ***
 
@@ -99,9 +101,9 @@ Initializes the plugin. Must be called before calling any other function.
         
 >####example
 
-			plugin.login(function(token) {
-				console.log("Access token is: " + token);
-			}), failureCallback);
+	plugin.login(function(token) {
+		console.log("Access token is: " + token);
+	}), failureCallback);
 
 ***
 
@@ -113,7 +115,7 @@ Initializes the plugin. Must be called before calling any other function.
 
 >####example
 
-			plugin.logout(successCallback, failureCallback);
+	plugin.logout(successCallback);
 
 ***
 
@@ -130,16 +132,16 @@ See the example below for Android. (They must be equiavelent, let us know if the
 
 >####example
          
-			plugin.info(function(data) {
-				console.log("User Id: "		+ data.id);
-				console.log("Name: "			+ data.name);
-				console.log("Email: "		+ data.email); // if asked for it in permissions
-				console.log("First Name: "	+ data.first_name);
-				console.log("Last Name: "	+ data.last_name);
-				console.log("Link: "			+ data.link);
-				console.log("Locale: "		+ data.locale);
-			}, 
-			function(err) {console.log(err););
+	plugin.info(function(data) {
+		console.log("User Id: "		+ data.id);
+		console.log("Name: "			+ data.name);
+		console.log("Email: "		+ data.email); // if asked for it in permissions
+		console.log("First Name: "	+ data.first_name);
+		console.log("Last Name: "	+ data.last_name);
+		console.log("Link: "			+ data.link);
+		console.log("Locale: "		+ data.locale);
+	}, 
+	function(err) {console.log(err););
 
 ***
 
@@ -165,7 +167,8 @@ See the example below for Android. (They must be equiavelent, let us know if the
 
 >####example
 
-			plugin.share('Name', 'http://www.example.com', 'http://www.example.com/test.png', 'Test feed caption', 'Test feed description.', successCallback, failureCallback);
+	plugin.share('Name', 'http://www.example.com', 'http://www.example.com/test.png', 
+		'Test caption', 'Test description.', successCallback, failureCallback);
 
 ***
 
@@ -190,7 +193,8 @@ feed call requires an active session. Shows facebook web dialog as a popup on iO
 
 >####example
 
-			plugin.feed('Name', 'http://www.example.com', 'http://www.example.com/test.png', 'Test feed caption', 'Test feed description.', successCallback, failureCallback);
+	plugin.feed('Name', 'http://www.example.com', 'http://www.example.com/test.png', 
+		'Test caption', 'Test description.', successCallback, failureCallback);
 
 ***
 
