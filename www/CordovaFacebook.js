@@ -1,12 +1,14 @@
 var CC;
 (function (CC) {
     var CordovaFacebook = (function () {
-        function CordovaFacebook(appId, appNamespace, appPermissions) {
-            this.appId = appId;
-            this.appNamespace = appNamespace;
-            this.appPermissions = appPermissions;
+        function CordovaFacebook() {
         }
-        CordovaFacebook.prototype.init = function (successcb, failcb) {
+        CordovaFacebook.prototype.init = function (successcb, failcb, appId, appNamespace, appPermissions) {
+            if (!window.cordova) {
+                if (failcb)
+                    failcb("no cordova");
+                return;
+            }
             window.cordova.exec(function (response) {
                 console.log("init call successful " + response);
                 if (successcb)
@@ -15,10 +17,15 @@ var CC;
                 console.log("init call failed with error: " + err);
                 if (failcb)
                     failcb(err);
-            }, "CordovaFacebook", "init", [this.appId, this.appNamespace, this.appPermissions]);
+            }, "CordovaFacebook", "init", [appId, appNamespace, appPermissions]);
         };
 
         CordovaFacebook.prototype.login = function (successcb, failcb) {
+            if (!window.cordova) {
+                if (failcb)
+                    failcb("no cordova");
+                return;
+            }
             window.cordova.exec(function (response) {
                 console.log("login call successful " + response);
                 if (successcb)
@@ -31,6 +38,9 @@ var CC;
         };
 
         CordovaFacebook.prototype.logout = function (successcb) {
+            if (!window.cordova) {
+                return;
+            }
             window.cordova.exec(function (response) {
                 console.log("logout call successful");
                 if (successcb)
@@ -41,6 +51,11 @@ var CC;
         };
 
         CordovaFacebook.prototype.info = function (successcb, failcb) {
+            if (!window.cordova) {
+                if (failcb)
+                    failcb("no cordova");
+                return;
+            }
             window.cordova.exec(function (response) {
                 console.log("info call successful " + response);
                 if (successcb)
@@ -53,6 +68,11 @@ var CC;
         };
 
         CordovaFacebook.prototype.feed = function (name, webUrl, logoUrl, caption, description, successcb, failcb) {
+            if (!window.cordova) {
+                if (failcb)
+                    failcb("no cordova");
+                return;
+            }
             window.cordova.exec(function (response) {
                 console.log("feed call successful: " + response.post_id);
                 if (successcb) {
@@ -70,6 +90,11 @@ var CC;
         };
 
         CordovaFacebook.prototype.share = function (name, webUrl, logoUrl, caption, description, successcb, failcb) {
+            if (!window.cordova) {
+                if (failcb)
+                    failcb("no cordova");
+                return;
+            }
             window.cordova.exec(function (response) {
                 console.log("share call successful: " + response);
                 if (successcb) {

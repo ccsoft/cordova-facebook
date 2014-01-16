@@ -1,9 +1,11 @@
 module CC {
     export class CordovaFacebook {
-        constructor(private appId: string, private appNamespace: string, private appPermissions: string[]) {
-        }
-
-        init(successcb?: (r: any) => void, failcb?: (err: any) => void) {
+        
+        init(successcb: (r: any) => void, failcb: (err: any) => void, appId: string, appNamespace: string, appPermissions: string[]) {
+            if (!(<any>window).cordova) {
+                if (failcb) failcb("no cordova");
+                return;
+            }
             (<any>window).cordova.exec(
                 (response) => {
                     console.log("init call successful " + response);
@@ -12,10 +14,14 @@ module CC {
                 (err) => {
                     console.log("init call failed with error: " + err);
                     if (failcb) failcb(err);
-                }, "CordovaFacebook", "init", [this.appId, this.appNamespace, this.appPermissions]);
+                }, "CordovaFacebook", "init", [appId, appNamespace, appPermissions]);
         }
         
         login(successcb?: (r: any) => void, failcb?: (err: any) => void) {
+            if (!(<any>window).cordova) {
+                if (failcb) failcb("no cordova");
+                return;
+            }            
             (<any>window).cordova.exec(
                 (response) => {
                     console.log("login call successful " + response);
@@ -28,6 +34,9 @@ module CC {
         }
 
         logout(successcb?: (r: any) => void) {
+            if (!(<any>window).cordova) {
+                return;
+            }            
             (<any>window).cordova.exec(
                 (response) => {
                     console.log("logout call successful");
@@ -39,6 +48,10 @@ module CC {
         }
 
         info(successcb?: (r: any) => void, failcb?: (err: any) => void) {
+            if (!(<any>window).cordova) {
+                if (failcb) failcb("no cordova");
+                return;
+            }
             (<any>window).cordova.exec(
                 (response) => {
                     console.log("info call successful " + response);
@@ -51,6 +64,10 @@ module CC {
         }
 
         feed(name: string, webUrl: string, logoUrl: string, caption: string, description: string, successcb?: (r: any) => void, failcb?: (err: any) => void) {
+            if (!(<any>window).cordova) {
+                if (failcb) failcb("no cordova");
+                return;
+            }            
             (<any>window).cordova.exec(
                 (response) => {
                     console.log("feed call successful: " + response.post_id);
@@ -69,6 +86,10 @@ module CC {
         }
 
         share(name: string, webUrl: string, logoUrl: string, caption: string, description: string, successcb?: () => void, failcb?: (err: any) => void) {
+            if (!(<any>window).cordova) {
+                if (failcb) failcb("no cordova");
+                return;
+            }            
             (<any>window).cordova.exec(
                 (response) => {
                     console.log("share call successful: " + response);
