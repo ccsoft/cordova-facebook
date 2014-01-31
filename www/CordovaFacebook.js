@@ -110,3 +110,5 @@ var CC;
     })();
     CC.CordovaFacebook = CordovaFacebook;
 })(CC || (CC = {}));
+
+module.exports = CC;

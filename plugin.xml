@@ -14,7 +14,9 @@
       <engine name="cordova" version=">=3.0.0" />
     </engines>
   
-	<asset src="www/CordovaFacebook.js" target="plugins/CordovaFacebook.js" />
+  <js-module src="www/CordovaFacebook.js">
+    <merges target="CC" />
+  </js-module>
 
 	<!-- android -->
 	<platform name="android">
