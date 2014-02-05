@@ -61,6 +61,10 @@ static NSMutableArray *publishPermissions;
     
     NSURL *url = [params objectForKey:@"url"];
     NSString *sourceApplication = [params objectForKey:@"sourceApplication"];
+    //NSLog(@"FB:: url: %@ sourceApp:%@", url, sourceApplication);
+    if(sourceApplication == nil || [sourceApplication isEqualToString:@"com.facebook.Facebook"] == FALSE) {
+        return;
+    }
     
     NSLog(@"Notification received by FB plugin notifiedOpenUrl method");
     // Note this handler block should be the exact same as the handler passed to any open calls.
