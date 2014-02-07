@@ -1,6 +1,7 @@
 package com.ccsoft.plugin;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
@@ -11,6 +12,7 @@ import org.json.JSONObject;
 import com.sromku.simple.fb.Permissions;
 import com.sromku.simple.fb.Properties;
 import com.sromku.simple.fb.SimpleFacebook;
+import com.sromku.simple.fb.SimpleFacebook.OnInviteListener;
 import com.sromku.simple.fb.SimpleFacebook.OnLogoutListener;
 import com.sromku.simple.fb.SimpleFacebook.OnProfileRequestListener;
 import com.sromku.simple.fb.SimpleFacebook.OnPublishListener;
@@ -231,6 +233,71 @@ public class CordovaFacebook extends CordovaPlugin {
     		cordova.getActivity().runOnUiThread(runnable);
         	
         	return true;
+        }
+		if (action.equals("invite")) {
+			final String message = args.getString(0); 
+        	final OnInviteListener onInviteListener = new SimpleFacebook.OnInviteListener()
+        	{
+
+        	    @Override
+        	    public void onFail(String reason)
+        	    {
+        	        // insure that you are logged in before inviting
+        	        Log.w(TAG, reason);
+        	        callbackContext.error(reason);
+        	    }
+
+        	    @Override
+        	    public void onException(Throwable throwable)
+        	    {
+				    // user may have canceled, we end up here in that case as well!
+        	        Log.e(TAG, "Bad thing happened", throwable);
+        	        callbackContext.error("exception");
+        	    }
+
+        	    @Override
+        	    public void onComplete(List<String> invitedFriends, String requestId)
+        	    {
+        	    	if(invitedFriends.isEmpty())
+        	    	{
+        	    		callbackContext.error("nobody invited");
+        	    		return;
+        	    	}
+        	        
+        	    	//Log.i(TAG, "Invitation was sent to " + invitedFriends.size() + " users with request id " + requestId);
+        	    	JSONArray to = new JSONArray();
+        	    	for (String item : invitedFriends) {
+        	        	to.put(item);        	    		
+        	    	}
+
+        	        JSONObject r = new JSONObject();
+        	        try {
+    					r.put("to", to);
+    					r.put("request", requestId);    					
+    				} catch (JSONException e) {
+    					Log.e(TAG, "Bad thing happened with invite json", e);
+    					callbackContext.error("json exception");
+    					return;
+    				}
+        	        callbackContext.success(r);
+        	    }
+
+        	    @Override
+        	    public void onCancel()
+        	    {
+        	        Log.i(TAG, "Canceled the dialog");
+        	        callbackContext.error("cancelled");
+        	    }
+        	};
+        	
+        	Runnable runnable = new Runnable() {
+    			public void run() {
+    				mSimpleFacebook.invite(message, onInviteListener);
+    			};
+    		};
+    		cordova.getActivity().runOnUiThread(runnable);
+        	
+			return true;
         }
         
         return false;

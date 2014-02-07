@@ -102,6 +102,24 @@ module CC {
                     if (failcb) failcb(err);
                 }, "CordovaFacebook", "share", [name, webUrl, logoUrl, caption, description]);
         }
+
+        invite(message: string, successcb: (req: any) => void, failcb?: (err: any) => void) {
+            if (!(<any>window).cordova) {
+                if (failcb) failcb("no cordova");
+                return;
+            }
+            (<any>window).cordova.exec(
+                (response) => {
+                    console.log("invite call successful: " + response);
+                    if (successcb) {
+                        successcb(response);
+                    }
+                },
+                (err) => {
+                    console.log("invite call failed with error: " + err);
+                    if (failcb) failcb(err);
+                }, "CordovaFacebook", "invite", [message]);            
+        }
     }
 }
 
