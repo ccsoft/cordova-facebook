@@ -33,6 +33,10 @@ static NSString* loginCallbackId = nil;
 + (NSString*) loginCallbackId {return loginCallbackId;}
 + (void)setLoginCallbackId:(NSString *)cb {loginCallbackId = cb;}
 
+static NSString* appId = nil;
++ (NSString*) appId {return appId;}
+//+ (void)setAppId:(NSString *)aid {appId = aid;}
+
 static NSMutableArray *readPermissions;
 + (NSMutableArray *)readPermissions { return readPermissions; }
 //+ (void)setReadPermissions:(NSMutableArray *)param { readPermissions = param; }
@@ -60,13 +64,14 @@ static NSMutableArray *publishPermissions;
     }
     
     NSURL *url = [params objectForKey:@"url"];
-    NSString *sourceApplication = [params objectForKey:@"sourceApplication"];
-    //NSLog(@"FB:: url: %@ sourceApp:%@", url, sourceApplication);
-    if(sourceApplication == nil || [sourceApplication isEqualToString:@"com.facebook.Facebook"] == FALSE) {
+    NSString *scheme = @"fb";
+    if ([[url scheme] isEqualToString:[scheme stringByAppendingString:appId]] == FALSE) {
+        return;
+    }
+    if([CordovaFacebook loginCallbackId] == nil || [CordovaFacebook commandDelegate] == nil) { // nowhere to call back
         return;
     }
     
-    NSLog(@"Notification received by FB plugin notifiedOpenUrl method");
     // Note this handler block should be the exact same as the handler passed to any open calls.
     [FBSession.activeSession setStateChangeHandler:
      ^(FBSession *session, FBSessionState state, NSError *error) {
@@ -74,6 +79,7 @@ static NSMutableArray *publishPermissions;
          [CordovaFacebook sessionStateChanged:session state:state error:error];
      }];
   
+    NSString *sourceApplication = [params objectForKey:@"sourceApplication"];
     BOOL success = [FBAppCall handleOpenURL:url sourceApplication:sourceApplication];
     if(success) {
         [params setValue:@"facebook" forKey:@"success"];
@@ -81,7 +87,6 @@ static NSMutableArray *publishPermissions;
 }
 
 +(void)notifiedApplicationDidBecomeActive:(NSNotification*)notification {
-    NSLog(@"notifiedApplicationDidBecomeActive");
     // Handle the user leaving the app while the Facebook login dialog is being shown
     // For example: when the user presses the iOS "home" button while the login dialog is active
     [FBAppCall handleDidBecomeActive];
@@ -175,7 +180,7 @@ static NSMutableArray *publishPermissions;
 {
     [CordovaFacebook setLoginCallbackId:command.callbackId];
     [CordovaFacebook setCommandDelegate:self.commandDelegate];
-//    NSString* appId = [command.arguments objectAtIndex:0];
+    appId = [command.arguments objectAtIndex:0];
 //    NSString* appNamespace = [command.arguments objectAtIndex:1];
     
     NSLog(@"FB SDK: %@", [FBSettings sdkVersion]);
@@ -342,7 +347,9 @@ static NSMutableArray *publishPermissions;
         NSArray *kv = [pair componentsSeparatedByString:@"="];
         NSString *val =
         [kv[1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-        params[kv[0]] = val;
+        NSString *key =
+        [kv[0] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        params[key] = val;
     }
     return params;
 }
@@ -394,6 +401,38 @@ static NSMutableArray *publishPermissions;
          }
          [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
      }];
+}
+
+- (void)invite:(CDVInvokedUrlCommand*)command
+{
+    if([FBSession.activeSession isOpen] == NO) { // not have a session to post
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no active session"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    
+    NSMutableDictionary* params =   [NSMutableDictionary dictionaryWithObjectsAndKeys: nil];
+    [FBWebDialogs presentRequestsDialogModallyWithSession:nil
+                                                  message:[command.arguments objectAtIndex:0]
+                                                    title:@""
+                                               parameters:params
+                                                  handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
+                                                      CDVPluginResult* pluginResult = nil;
+                                                      if (error) {
+                                                          // Case A: Error launching the dialog or sending request.
+                                                          pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"error sending request"];
+                                                      } else {
+                                                          if (result == FBWebDialogResultDialogNotCompleted) {
+                                                              // Case B: User clicked the "x" icon
+                                                              pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"user canceled request"];
+                                                          } else {
+                                                              NSDictionary *urlParams = [self parseURLParams:[resultURL query]];
+                                                              pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:urlParams];
+                                                          }
+                                                      }
+                                                      [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                                                  }
+                                              friendCache:nil];
 }
 
 /*

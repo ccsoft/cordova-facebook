@@ -28,6 +28,7 @@
 - (void)info:(CDVInvokedUrlCommand*)command;
 - (void)share:(CDVInvokedUrlCommand*)command;
 - (void)feed:(CDVInvokedUrlCommand*)command;
+- (void)invite:(CDVInvokedUrlCommand*)command;
 
 + (void)sessionStateChanged:(FBSession *)session state:(FBSessionState) state error:(NSError *)error;
 + (BOOL)isReadPermission: (NSString*) permission;
