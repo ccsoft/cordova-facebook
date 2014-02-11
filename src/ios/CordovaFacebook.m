@@ -208,6 +208,9 @@ static NSMutableArray *publishPermissions;
                                           // also for intermediate states and NOT just when the session open
                                           [CordovaFacebook sessionStateChanged:session state:state error:error];
                                       }];
+    } else {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 }
 
