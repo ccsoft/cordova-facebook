@@ -107,7 +107,7 @@ var CC;
             }, "CordovaFacebook", "share", [name, webUrl, logoUrl, caption, description]);
         };
 
-        CordovaFacebook.prototype.invite = function (message, successcb, failcb) {
+        CordovaFacebook.prototype.invite = function (message, title, successcb, failcb) {
             if (!window.cordova) {
                 if (failcb)
                     failcb("no cordova");
@@ -122,7 +122,7 @@ var CC;
                 console.log("invite call failed with error: " + err);
                 if (failcb)
                     failcb(err);
-            }, "CordovaFacebook", "invite", [message]);
+            }, "CordovaFacebook", "invite", [message, title]);
         };
         return CordovaFacebook;
     })();

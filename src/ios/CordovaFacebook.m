@@ -417,7 +417,7 @@ static NSMutableArray *publishPermissions;
     NSMutableDictionary* params =   [NSMutableDictionary dictionaryWithObjectsAndKeys: nil];
     [FBWebDialogs presentRequestsDialogModallyWithSession:nil
                                                   message:[command.arguments objectAtIndex:0]
-                                                    title:@""
+                                                    title:[command.arguments objectAtIndex:1]
                                                parameters:params
                                                   handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
                                                       CDVPluginResult* pluginResult = nil;
