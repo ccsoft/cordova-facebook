@@ -332,34 +332,13 @@ public class CordovaFacebook extends CordovaPlugin {
     	    @Override
     	    public void onComplete(Profile profile)
     	    {
-    	        JSONObject r = new JSONObject();
-    	        try {
-					r.put("id", profile.getId());
-					r.put("name", profile.getName());
-					r.put("email", profile.getEmail());
-					r.put("first_name", profile.getFirstName());
-					r.put("last_name", profile.getLastName());
-					r.put("link", profile.getLink());
-					r.put("locale", profile.getLocale());
-					Log.i(TAG, profile.getId() + " " + profile.getName());					
-				} catch (JSONException e) {
-					Log.e(TAG, "Bad thing happened with profile json", e);
-					callbackContext.error("json exception");
-					return;
-				}
-    	        callbackContext.success(r);
+    	    	callbackContext.success(profile.getGraphUser().getInnerJSONObject());
     	    }
 
     	};
-    	
-    	// prepare the properties that you need
-        Properties properties = new Properties.Builder()
-            .add(Properties.ID)
-            .add(Properties.NAME)
-            .build();
 
         // do the get profile action
-        mSimpleFacebook.getProfile(properties, onProfileRequestListener);
+        mSimpleFacebook.getProfile(onProfileRequestListener);
     }
 
     @Override
