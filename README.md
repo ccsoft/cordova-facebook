@@ -84,6 +84,7 @@ The plugin has the following methods:
 * [info](#info)
 * [share](#share)
 * [feed](#feed)
+* [invite](#invite)
 
 *** 
 
@@ -214,6 +215,30 @@ feed call requires an active session. Shows facebook web dialog as a popup on iO
 
 	plugin.feed('Name', 'http://www.example.com', 'http://www.example.com/test.png', 
 		'Test caption', 'Test description.', successCallback, failureCallback);
+
+***
+
+###invite
+invite call requires an active session. Shows facebook invite dialog and returns the invitation response.
+
+>####parameters
+		
+>>*message*: string: Mesage to be shown with the invitation (to friend).
+
+>>*title*: string: Title to be shown with the invitation (to friend).
+
+>>*successCallback*: function: Returns invitation id and the fb id of people the invitation has been sent.
+
+>>*failureCallback*: function: Called with failure reason string.
+
+>####example
+
+	plugin.invite('Invitation message better be inviting', 'Invitation Title', successCallback, failureCallback);
+
+For implementation details: 
+- See iOS documentation [here](https://developers.facebook.com/docs/games/mobile/ios-tutorial/#requests)
+- See Android implementation details [here](https://github.com/sromku/android-simple-facebook#invite)
+
 
 ***
 
