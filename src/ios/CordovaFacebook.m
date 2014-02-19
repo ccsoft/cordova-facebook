@@ -121,7 +121,13 @@ static NSMutableArray *publishPermissions;
         NSLog(@"Session opened");
         
         if([CordovaFacebook loginCallbackId] != nil) {
-            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[FBSession.activeSession accessTokenData] accessToken] ];
+            NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+            FBAccessTokenData* token = [FBSession.activeSession accessTokenData];
+            dict[@"accessToken"] = [token accessToken];
+            long long timestamp = (long long)[[token expirationDate] timeIntervalSince1970]*1000.0;
+            dict[@"expirationDate"] = [[NSNumber numberWithLongLong:timestamp] stringValue];
+            dict[@"permissions"] = [[FBSession.activeSession accessTokenData] permissions];
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: dict];
             [[CordovaFacebook commandDelegate] sendPluginResult:pluginResult callbackId:[CordovaFacebook loginCallbackId]];
         }
         else {
@@ -209,7 +215,7 @@ static NSMutableArray *publishPermissions;
                                           [CordovaFacebook sessionStateChanged:session state:state error:error];
                                       }];
     } else {
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }
 }
@@ -253,7 +259,7 @@ static NSMutableArray *publishPermissions;
         [FBSession.activeSession closeAndClearTokenInformation];
     }
     
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
@@ -305,7 +311,7 @@ static NSMutableArray *publishPermissions;
                                                     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"user cancelled"];
                                                 } else {
                                                     NSLog(@"Share Success: %@", results);
-                                                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+                                                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
                                                 }
                                             }
                                             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];

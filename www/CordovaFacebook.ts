@@ -8,7 +8,6 @@ module CC {
             }
             (<any>window).cordova.exec(
                 (response) => {
-                    console.log("init call successful " + response);
                     if (successcb) successcb(response);
                 },
                 (err) => {
@@ -24,7 +23,6 @@ module CC {
             }            
             (<any>window).cordova.exec(
                 (response) => {
-                    console.log("login call successful " + response);
                     if (successcb) successcb(response);
                 },
                 (err) => {
@@ -39,7 +37,6 @@ module CC {
             }            
             (<any>window).cordova.exec(
                 (response) => {
-                    console.log("logout call successful");
                     if (successcb) successcb(response);
                 },
                 (err) => {
@@ -54,7 +51,6 @@ module CC {
             }
             (<any>window).cordova.exec(
                 (response) => {
-                    console.log("info call successful " + response);
                     if (successcb) successcb(response);
                 },
                 (err) => {
@@ -70,7 +66,6 @@ module CC {
             }            
             (<any>window).cordova.exec(
                 (response) => {
-                    console.log("feed call successful: " + response.post_id);
                     if (successcb) {
                         if (response && response.post_id) {
                             successcb(response.post_id);
@@ -92,7 +87,6 @@ module CC {
             }            
             (<any>window).cordova.exec(
                 (response) => {
-                    console.log("share call successful: " + response);
                     if (successcb) {
                         successcb();                        
                     }
@@ -110,7 +104,6 @@ module CC {
             }
             (<any>window).cordova.exec(
                 (response) => {
-                    console.log("invite call successful: " + response);
                     if (successcb) {
                         successcb(response);
                     }

@@ -99,7 +99,7 @@ Initializes the plugin. Must be called before calling any other function.
 
 >> *appPermissions*: array: Your FB app permissions as an array of strings. 
 
->> *successCallback*: function: Called with an fb access_token if already logged in to FB.
+>> *successCallback*: function: If not already logged in, we return an empty string. If already logged in to FB we return JSONObject for "accessToken", "expirationDate" and "permissions". Expiration date is a timestamp value. Permissions are retruned as JSONArray.
 
 >> *failureCallback*: function: Called with failure reason string.
          
@@ -107,7 +107,13 @@ Initializes the plugin. Must be called before calling any other function.
 
 	plugin.init('YOUR_FB_APP_ID', 'YOUR_FB_APP_NAME', 
 		['basic_info', 'email', 'publish_actions'], 
-		successCallback, failureCallback);
+		function(response) {
+			if(response) {
+				console.log("Access token is: " + response.accessToken);
+				console.log("Expires: " + response.expirationDate);
+				console.log("Permissions are: " + response.permissions);
+			}
+	}), failureCallback);
 
 ***
 
@@ -115,14 +121,16 @@ Initializes the plugin. Must be called before calling any other function.
 
 >####parameters
 	
->>*successCallback*: function: Called with an fb access_token if login successful.
+>>*successCallback*: function: Called with a JSONObject for "accessToken", "expirationDate" and "permissions". Expiration date is a timestamp value. Permissions are retruned as JSONArray.
          
 >>*failureCallback*: function: Called with failure reason string.
         
 >####example
 
-	plugin.login(function(token) {
-		console.log("Access token is: " + token);
+	plugin.login(function(response) {
+		console.log("Access token is: " + response.accessToken);
+		console.log("Expires: " + response.expirationDate);
+		console.log("Permissions are: " + response.permissions);
 	}), failureCallback);
 
 ***

@@ -9,8 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.facebook.Session;
 import com.sromku.simple.fb.Permissions;
-import com.sromku.simple.fb.Properties;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.SimpleFacebook.OnInviteListener;
 import com.sromku.simple.fb.SimpleFacebook.OnLogoutListener;
@@ -60,7 +60,8 @@ public class CordovaFacebook extends CordovaPlugin {
 			
 			SimpleFacebook simpleFB = SimpleFacebook.getInstance(cordova.getActivity());
 			if(simpleFB.isLogin()) {
-				callbackContext.success(simpleFB.getAccessToken());
+				JSONObject resp = prepareAccessTokenInfo(SimpleFacebook.getOpenSession());
+				callbackContext.success(resp);
 			} else {
 				callbackContext.success("");
 			}
@@ -102,9 +103,9 @@ public class CordovaFacebook extends CordovaPlugin {
         	    public void onLogin()
         	    {
         	        // change the state of the button or do whatever you want
-        	        Log.i(TAG, "Logged in");
-        	        callbackContext.success(mSimpleFacebook.getAccessToken());
-        	        //getUserInfo(callbackContext);
+        	        Log.i(TAG, "Logged in fb");
+        	        JSONObject resp = prepareAccessTokenInfo(SimpleFacebook.getOpenSession());
+    				callbackContext.success(resp);        	        
         	    }
 
         	    @Override
@@ -153,7 +154,7 @@ public class CordovaFacebook extends CordovaPlugin {
         	    public void onLogout()
         	    {
         	        Log.i(TAG, "You are logged out");
-        	        callbackContext.success();
+        	        callbackContext.success("");
         	    }
         	};
 
@@ -303,6 +304,23 @@ public class CordovaFacebook extends CordovaPlugin {
         return false;
     }
     
+    private JSONObject prepareAccessTokenInfo(Session session) {    	
+    	JSONObject r = new JSONObject();
+        try {
+			r.put("accessToken", session.getAccessToken());
+			r.put("expirationDate", session.getExpirationDate().getTime());
+			JSONArray permissions  = new JSONArray();
+			List<String> parr = session.getPermissions();
+	    	for (String item : parr) {
+	    		permissions.put(item);        	    		
+	    	}
+			r.put("permissions", permissions);
+		} catch (JSONException e) {
+			Log.e(TAG, "Exception when preparing access token json", e);			
+			return null;
+		}
+        return r;
+    }
     public void getUserInfo(final CallbackContext callbackContext) {
     	final SimpleFacebook mSimpleFacebook = SimpleFacebook.getInstance(cordova.getActivity());
     	OnProfileRequestListener onProfileRequestListener = new SimpleFacebook.OnProfileRequestListener()

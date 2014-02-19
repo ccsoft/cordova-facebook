@@ -10,7 +10,6 @@ var CC;
                 return;
             }
             window.cordova.exec(function (response) {
-                console.log("init call successful " + response);
                 if (successcb)
                     successcb(response);
             }, function (err) {
@@ -27,7 +26,6 @@ var CC;
                 return;
             }
             window.cordova.exec(function (response) {
-                console.log("login call successful " + response);
                 if (successcb)
                     successcb(response);
             }, function (err) {
@@ -42,7 +40,6 @@ var CC;
                 return;
             }
             window.cordova.exec(function (response) {
-                console.log("logout call successful");
                 if (successcb)
                     successcb(response);
             }, function (err) {
@@ -57,7 +54,6 @@ var CC;
                 return;
             }
             window.cordova.exec(function (response) {
-                console.log("info call successful " + response);
                 if (successcb)
                     successcb(response);
             }, function (err) {
@@ -74,7 +70,6 @@ var CC;
                 return;
             }
             window.cordova.exec(function (response) {
-                console.log("feed call successful: " + response.post_id);
                 if (successcb) {
                     if (response && response.post_id) {
                         successcb(response.post_id);
@@ -96,7 +91,6 @@ var CC;
                 return;
             }
             window.cordova.exec(function (response) {
-                console.log("share call successful: " + response);
                 if (successcb) {
                     successcb();
                 }
@@ -114,7 +108,6 @@ var CC;
                 return;
             }
             window.cordova.exec(function (response) {
-                console.log("invite call successful: " + response);
                 if (successcb) {
                     successcb(response);
                 }
