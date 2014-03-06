@@ -113,6 +113,23 @@ static NSMutableArray *publishPermissions;
     return hasPermissions;
 }
 
++ (void) reportLogin
+{
+    if([CordovaFacebook loginCallbackId] != nil) {
+        NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+        FBAccessTokenData* token = [FBSession.activeSession accessTokenData];
+        dict[@"accessToken"] = [token accessToken];
+        long long timestamp = (long long)[[token expirationDate] timeIntervalSince1970]*1000.0;
+        dict[@"expirationDate"] = [[NSNumber numberWithLongLong:timestamp] stringValue];
+        dict[@"permissions"] = [[FBSession.activeSession accessTokenData] permissions];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: dict];
+        [[CordovaFacebook commandDelegate] sendPluginResult:pluginResult callbackId:[CordovaFacebook loginCallbackId]];
+    }
+    else {
+        NSLog(@"noone to callback");
+    }
+}
+
 // This method will handle ALL the session state changes in the app
 + (void)sessionStateChanged:(FBSession *)session state:(FBSessionState) state error:(NSError *)error
 {
@@ -120,19 +137,28 @@ static NSMutableArray *publishPermissions;
     if (!error && state == FBSessionStateOpen){
         NSLog(@"Session opened");
         
-        if([CordovaFacebook loginCallbackId] != nil) {
-            NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-            FBAccessTokenData* token = [FBSession.activeSession accessTokenData];
-            dict[@"accessToken"] = [token accessToken];
-            long long timestamp = (long long)[[token expirationDate] timeIntervalSince1970]*1000.0;
-            dict[@"expirationDate"] = [[NSNumber numberWithLongLong:timestamp] stringValue];
-            dict[@"permissions"] = [[FBSession.activeSession accessTokenData] permissions];
-            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary: dict];
-            [[CordovaFacebook commandDelegate] sendPluginResult:pluginResult callbackId:[CordovaFacebook loginCallbackId]];
+        // if need publish permissions
+        if(publishPermissions.count > 0 && [CordovaFacebook activeSessionHasPermissions:publishPermissions] == NO) {
+            [FBSession.activeSession requestNewPublishPermissions:publishPermissions
+                                                  defaultAudience:FBSessionDefaultAudienceEveryone
+                                                completionHandler:^(FBSession *session, NSError *error) {
+                                                    if(error != nil) {
+                                                        NSLog(@"Request publish err:%@", error);
+                                                        [CordovaFacebook reportLogin];
+                                                        return;
+                                                    }
+                                                    else if ([CordovaFacebook activeSessionHasPermissions:publishPermissions] == NO) {
+                                                        NSLog(@"Request publish failed");
+                                                        [CordovaFacebook reportLogin];
+                                                        return;
+                                                    }
+                                                    NSLog(@"Request publish granted for: %@", publishPermissions);
+                                                    [CordovaFacebook reportLogin];
+                                                }];
+        } else {
+            [CordovaFacebook reportLogin];
         }
-        else {
-            NSLog(@"noone to callback");
-        }
+      
         return;
     }
     if (state == FBSessionStateClosed || state == FBSessionStateClosedLoginFailed){
