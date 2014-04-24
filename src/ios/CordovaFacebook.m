@@ -250,9 +250,9 @@ static NSMutableArray *publishPermissions;
 {
     [CordovaFacebook setLoginCallbackId:nil];
     if([FBSession.activeSession isOpen]){
-        NSLog(@"already logged in");
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[FBSession.activeSession accessTokenData] accessToken] ];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        //NSLog(@"already logged in");
+        [CordovaFacebook setLoginCallbackId:command.callbackId];
+        [CordovaFacebook reportLogin];
         return;
     }
     if(readPermissions == nil) {
