@@ -20,9 +20,9 @@ We support only Cordova version > 3.0
 
 We currently tested FacebookSDK for following platforms and versions:
 
-- [FacebookSDK iOS 3.11](https://developers.facebook.com/docs/ios/)
+- [FacebookSDK iOS 3.13.1](https://developers.facebook.com/docs/ios/)
 
-- [FacebookSDK Android 3.6](https://developers.facebook.com/docs/android/)
+- [FacebookSDK Android 3.8](https://developers.facebook.com/docs/android/)
 
 ##Prerequisites
 
