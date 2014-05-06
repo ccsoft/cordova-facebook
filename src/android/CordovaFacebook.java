@@ -89,7 +89,7 @@ public class CordovaFacebook extends CordovaPlugin {
         	    public void onException(Throwable throwable)
         	    {
         	        Log.e(TAG, "Bad thing happened", throwable);
-        	        callbackContext.error("exception");
+        	        callbackContext.error(throwable.getMessage());
         	    }
 
         	    @Override
@@ -140,7 +140,7 @@ public class CordovaFacebook extends CordovaPlugin {
         	    public void onException(Throwable throwable)
         	    {
         	        Log.e(TAG, "Bad thing happened", throwable);
-        	        callbackContext.error("exception");
+        	        callbackContext.error(throwable.getMessage());
         	    }
 
         	    @Override
@@ -191,7 +191,7 @@ public class CordovaFacebook extends CordovaPlugin {
         	    public void onException(Throwable throwable)
         	    {
         	        Log.e(TAG, "Bad thing happened", throwable);
-        	        callbackContext.error("exception");
+        	        callbackContext.error(throwable.getMessage());
         	    }
 
         	    @Override
@@ -253,7 +253,7 @@ public class CordovaFacebook extends CordovaPlugin {
         	    {
 				    // user may have canceled, we end up here in that case as well!
         	        Log.e(TAG, "Bad thing happened", throwable);
-        	        callbackContext.error("exception");
+        	        callbackContext.error(throwable.getMessage());
         	    }
 
         	    @Override
@@ -337,7 +337,7 @@ public class CordovaFacebook extends CordovaPlugin {
     	    public void onException(Throwable throwable)
     	    {
     	        Log.e(TAG, "Bad thing happened", throwable);
-    	        callbackContext.error("exception");
+    	        callbackContext.error(throwable.getMessage());
     	    }
 
     	    @Override
