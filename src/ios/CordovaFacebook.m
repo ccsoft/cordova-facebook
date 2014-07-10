@@ -28,7 +28,6 @@ static id <CDVCommandDelegate> commandDelegate = nil;
 + (id <CDVCommandDelegate>) commandDelegate {return commandDelegate;}
 + (void)setCommandDelegate:(id <CDVCommandDelegate>)del {commandDelegate = del;}
 
-
 static NSString* loginCallbackId = nil;
 + (NSString*) loginCallbackId {return loginCallbackId;}
 + (void)setLoginCallbackId:(NSString *)cb {loginCallbackId = cb;}
@@ -50,7 +49,7 @@ static NSMutableArray *publishPermissions;
                                              selector:@selector(notifiedOpenUrl:)
                                                  name:@"CordovaPluginOpenURLNotification"
                                                object:nil];
-    
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(notifiedApplicationDidBecomeActive:)
                                                  name:UIApplicationDidBecomeActiveNotification
@@ -62,7 +61,7 @@ static NSMutableArray *publishPermissions;
     if (params == nil) {
         return;
     }
-    
+
     NSURL *url = [params objectForKey:@"url"];
     NSString *scheme = @"fb";
     if ([[url scheme] isEqualToString:[scheme stringByAppendingString:appId]] == FALSE) {
@@ -71,14 +70,14 @@ static NSMutableArray *publishPermissions;
     if([CordovaFacebook loginCallbackId] == nil || [CordovaFacebook commandDelegate] == nil) { // nowhere to call back
         return;
     }
-    
+
     // Note this handler block should be the exact same as the handler passed to any open calls.
     [FBSession.activeSession setStateChangeHandler:
      ^(FBSession *session, FBSessionState state, NSError *error) {
          // Call sessionStateChanged:state:error method to handle session state changes
          [CordovaFacebook sessionStateChanged:session state:state error:error];
      }];
-  
+
     NSString *sourceApplication = [params objectForKey:@"sourceApplication"];
     BOOL success = [FBAppCall handleOpenURL:url sourceApplication:sourceApplication];
     if(success) {
@@ -104,7 +103,7 @@ static NSMutableArray *publishPermissions;
             }
             return *stop;
         }];
-        
+
         if (index == NSNotFound)
         {
             hasPermissions = NO;
@@ -113,7 +112,7 @@ static NSMutableArray *publishPermissions;
     return hasPermissions;
 }
 
-+ (void) reportLogin
++ (void)reportLogin
 {
     if([CordovaFacebook loginCallbackId] != nil) {
         NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
@@ -136,7 +135,7 @@ static NSMutableArray *publishPermissions;
     // If the session was opened successfully
     if (!error && state == FBSessionStateOpen){
         NSLog(@"Session opened");
-        
+
         // if need publish permissions
         if(publishPermissions.count > 0 && [CordovaFacebook activeSessionHasPermissions:publishPermissions] == NO) {
             [FBSession.activeSession requestNewPublishPermissions:publishPermissions
@@ -158,7 +157,7 @@ static NSMutableArray *publishPermissions;
         } else {
             [CordovaFacebook reportLogin];
         }
-      
+
         return;
     }
     if (state == FBSessionStateClosed || state == FBSessionStateClosedLoginFailed){
@@ -182,27 +181,27 @@ static NSMutableArray *publishPermissions;
             // If the user cancelled login, do nothing
             if ([FBErrorUtility errorCategoryForError:error] == FBErrorCategoryUserCancelled) {
                 errorText = @"User cancelled login";
-                
+
                 // Handle session closures that happen outside of the app
             } else if ([FBErrorUtility errorCategoryForError:error] == FBErrorCategoryAuthenticationReopenSession){
                 errorText = @"Your current session is no longer valid. Please log in again.";
-                
+
                 // For simplicity, here we just show a generic message for all other errors
                 // You can learn how to handle other errors using our guide: https://developers.facebook.com/docs/ios/errors
             } else {
                 //Get more error information from the error
                 NSDictionary *errorInformation = [[[error.userInfo objectForKey:@"com.facebook.sdk:ParsedJSONResponseKey"] objectForKey:@"body"] objectForKey:@"error"];
-                
+
                 errorText = [NSString stringWithFormat:@"Please retry. \n\n If the problem persists contact us and mention this error code: %@", [errorInformation objectForKey:@"message"]];
             }
         }
-        
+
         NSLog(@"%@", errorText);
         if([CordovaFacebook loginCallbackId] != nil) {
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:errorText];
             [[CordovaFacebook commandDelegate] sendPluginResult:pluginResult callbackId:[CordovaFacebook loginCallbackId]];
         }
-        
+
         // Clear this token
         [FBSession.activeSession closeAndClearTokenInformation];
     }
@@ -214,9 +213,9 @@ static NSMutableArray *publishPermissions;
     [CordovaFacebook setCommandDelegate:self.commandDelegate];
     appId = [command.arguments objectAtIndex:0];
 //    NSString* appNamespace = [command.arguments objectAtIndex:1];
-    
+
     NSLog(@"FB SDK: %@", [FBSettings sdkVersion]);
-    
+
     NSArray* appPermissions = [command.arguments objectAtIndex:2];
     readPermissions = [[NSMutableArray alloc] init];
     publishPermissions = [[NSMutableArray alloc] init];
@@ -227,10 +226,10 @@ static NSMutableArray *publishPermissions;
             [publishPermissions addObject:perm];
         }
     }
-    
+
     // Whenever a person inits, check for a cached session
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
-        
+
         // If there's one, just open the session silently, without showing the user the login UI
         [FBSession openActiveSessionWithReadPermissions:@[@"basic_info"]
                                            allowLoginUI:NO
@@ -261,7 +260,7 @@ static NSMutableArray *publishPermissions;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-    
+
     [CordovaFacebook setLoginCallbackId:command.callbackId];
     // Open a session showing the user the login UI
     // You must ALWAYS ask for basic_info permissions when opening a session
@@ -279,12 +278,12 @@ static NSMutableArray *publishPermissions;
     // If the session state is any of the two "open" states when the button is clicked
     if (FBSession.activeSession.state == FBSessionStateOpen
         || FBSession.activeSession.state == FBSessionStateOpenTokenExtended) {
-        
+
         // Close the session and remove the access token from the cache
         // The session state handler (in the app delegate) will be called automatically
         [FBSession.activeSession closeAndClearTokenInformation];
     }
-    
+
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
@@ -296,7 +295,7 @@ static NSMutableArray *publishPermissions;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-    
+
     [[FBRequest requestForMe] startWithCompletionHandler:
      ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *info, NSError *error) {
          if (!error) {
@@ -346,7 +345,7 @@ static NSMutableArray *publishPermissions;
         // falback to feed dialog (user does not have FB app installed)
         [self feed:command];
     }
-    
+
 /*    // if need publish permissions
     if(publishPermissions.count > 0 && [CordovaFacebook activeSessionHasPermissions:publishPermissions] == NO) {
             [FBSession.activeSession requestNewPublishPermissions:publishPermissions
@@ -396,7 +395,7 @@ static NSMutableArray *publishPermissions;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-    
+
     NSMutableDictionary *params =
     [NSMutableDictionary dictionaryWithObjectsAndKeys:
      [command.arguments objectAtIndex:0], @"name",
@@ -445,7 +444,7 @@ static NSMutableArray *publishPermissions;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-    
+
     NSMutableDictionary* params =   [NSMutableDictionary dictionaryWithObjectsAndKeys: nil];
     [FBWebDialogs presentRequestsDialogModallyWithSession:nil
                                                   message:[command.arguments objectAtIndex:0]
@@ -470,11 +469,42 @@ static NSMutableArray *publishPermissions;
                                               friendCache:nil];
 }
 
+- (void)graphApi:(CDVInvokedUrlCommand *)command
+{
+    if([FBSession.activeSession isOpen] == NO) { // not have a session to post
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no active session"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+
+    NSString *graphPath = [command argumentAtIndex:0];
+
+    NSLog(@"Graph Path = %@", graphPath);
+    [FBRequestConnection
+     startWithGraphPath: graphPath
+     completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+         CDVPluginResult* pluginResult = nil;
+         if (!error) {
+             NSDictionary *response = (NSDictionary *) result;
+
+             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:response];
+         } else {
+             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
+                                              messageAsString:[error localizedDescription]];
+         }
+
+         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+     }];
+}
+
 /*
  I hope someday Facebook SDK will have a better method for this.
  */
 + (BOOL)isReadPermission: (NSString*) permission
 {
+    if([permission isEqualToString:@"public_profile"]) return YES;
+    if([permission isEqualToString:@"user_friends"]) return YES;
+
     if([permission isEqualToString:@"basic_info"]) return YES;
     if([permission isEqualToString:@"user_about_me"]) return YES;
     if([permission isEqualToString:@"friends_about_me"]) return YES;
@@ -529,8 +559,9 @@ static NSMutableArray *publishPermissions;
     if([permission isEqualToString:@"read_insights"]) return YES;
     if([permission isEqualToString:@"xmpp_login"]) return YES;
     if([permission isEqualToString:@"email"]) return YES;
-    
+
     return NO;
 }
 
 @end
+
