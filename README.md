@@ -16,13 +16,13 @@ We also provide [TypeScript](http://www.typescriptlang.org/) source file togethe
 	5. Well, it was not that hard to do it, so we did it.
 
 ##Versions
-We support only Cordova version > 3.0
+Sample app is built and tested with Cordova 3.5 and we only support Cordova version > 3.0.
 
 We currently tested FacebookSDK for following platforms and versions:
 
 - [FacebookSDK iOS 3.13.1](https://developers.facebook.com/docs/ios/)
 
-- [FacebookSDK Android 3.8](https://developers.facebook.com/docs/android/)
+- [FacebookSDK Android 3.16.0](https://developers.facebook.com/docs/android/)
 
 ##Prerequisites
 
@@ -34,12 +34,11 @@ The guideline is well documented and people at Facebook may change stuff in the 
 ###Android
 
 Unlike iOS, Android [getting started guideline](https://developers.facebook.com/docs/android/getting-started/) is pretty long and scary. 
-For Android we rely on [Android Simple Facebook](https://github.com/sromku/android-simple-facebook) by [Roman Kushnarenko](https://github.com/sromku), many thanks for that project. 
-We are using our own [fork](https://github.com/koraybalci/android-simple-facebook) (but it's in sync for now) for this plugin. We distribute the compiled version of the library with the plugin, so you don't have to worry about anything. 
+For Android we rely on [Android Simple Facebook](https://github.com/sromku/android-simple-facebook) by [Roman Kushnarenko](https://github.com/sromku), many thanks for that project. We distribute the compiled version (2.1) of the library with the plugin, so you don't have to worry about anything. 
 
 Here is what to do for Android before installing our plugin.
 
-1. Clone [Facebook SDK 3.6](https://github.com/facebook/facebook-android-sdk) or [download](https://developers.facebook.com/android/) it. Then, import the project to your workspace.
+1. Clone [Facebook SDK 3.16.0](https://github.com/facebook/facebook-android-sdk) or [download](https://developers.facebook.com/android/) it. Then, import the project to your workspace.
 
 2. Add reference from your project to `FacebookSDK` project.
 
