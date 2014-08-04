@@ -10,16 +10,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.facebook.Session;
-import com.sromku.simple.fb.Permissions;
+import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
+/*
 import com.sromku.simple.fb.SimpleFacebook.OnInviteListener;
 import com.sromku.simple.fb.SimpleFacebook.OnLogoutListener;
 import com.sromku.simple.fb.SimpleFacebook.OnProfileRequestListener;
 import com.sromku.simple.fb.SimpleFacebook.OnPublishListener;
+*/
 import com.sromku.simple.fb.SimpleFacebookConfiguration;
-import com.sromku.simple.fb.SimpleFacebook.OnLoginListener;
+//import com.sromku.simple.fb.SimpleFacebook.OnLoginListener;
 import com.sromku.simple.fb.entities.Feed;
 import com.sromku.simple.fb.entities.Profile;
+import com.sromku.simple.fb.listeners.OnInviteListener;
+import com.sromku.simple.fb.listeners.OnLoginListener;
+import com.sromku.simple.fb.listeners.OnLogoutListener;
+import com.sromku.simple.fb.listeners.OnProfileListener;
+import com.sromku.simple.fb.listeners.OnPublishListener;
 
 import android.content.Intent;
 import android.util.Log;
@@ -38,17 +45,17 @@ public class CordovaFacebook extends CordovaPlugin {
     	
     	if (action.equals("init")) {
     		JSONArray ps = args.getJSONArray(2);
-    		ArrayList<Permissions> permsArr = new ArrayList<Permissions>();
+    		ArrayList<Permission> permsArr = new ArrayList<Permission>();
     		for(int i=0; i<ps.length(); i++){
-    			Permissions p = Permissions.findPermission(ps.getString(i));
+    			Permission p = Permission.fromValue(ps.getString(i));
     			if(p != null){
 	    			permsArr.add(p);
     			}
     		}
     		if(permsArr.isEmpty()){
-    			permsArr.add(Permissions.BASIC_INFO);
+    			permsArr.add(Permission.PUBLIC_PROFILE);
     		}
-    		Permissions[] perms = permsArr.toArray(new Permissions[permsArr.size()]);
+    		Permission[] perms = permsArr.toArray(new Permission[permsArr.size()]);
     		
     		facebookConfiguration = new SimpleFacebookConfiguration.Builder()
 			    .setAppId(args.getString(0))
@@ -60,7 +67,7 @@ public class CordovaFacebook extends CordovaPlugin {
 			
 			SimpleFacebook simpleFB = SimpleFacebook.getInstance(cordova.getActivity());
 			if(simpleFB.isLogin()) {
-				JSONObject resp = prepareAccessTokenInfo(SimpleFacebook.getOpenSession());
+				JSONObject resp = prepareAccessTokenInfo(simpleFB.getSession());
 				callbackContext.success(resp);
 			} else {
 				callbackContext.success("");
@@ -76,7 +83,7 @@ public class CordovaFacebook extends CordovaPlugin {
     	final SimpleFacebook mSimpleFacebook = SimpleFacebook.getInstance(cordova.getActivity());
     	if (action.equals("login")) {
     		// login listener
-        	final OnLoginListener onLoginListener = new SimpleFacebook.OnLoginListener()
+        	final OnLoginListener onLoginListener = new OnLoginListener()
         	{
         	    @Override
         	    public void onFail(String reason)
@@ -104,15 +111,17 @@ public class CordovaFacebook extends CordovaPlugin {
         	    {
         	        // change the state of the button or do whatever you want
         	        Log.i(TAG, "Logged in fb");
-        	        JSONObject resp = prepareAccessTokenInfo(SimpleFacebook.getOpenSession());
+        	        JSONObject resp = prepareAccessTokenInfo(mSimpleFacebook.getSession());
     				callbackContext.success(resp);        	        
         	    }
 
         	    @Override
-        	    public void onNotAcceptingPermissions()
+        	    public void onNotAcceptingPermissions(Permission.Type type)
         	    {
-        	        Log.w(TAG, "User didn't accept read permissions");
-        	        callbackContext.error("permission not accepted");
+        	    	// user didn't accept READ or WRITE permission
+        	    	String msg = String.format("User didn't accept %s permissions", type.name());
+        	        Log.w(TAG, msg);
+        	        callbackContext.error(msg);
         	    }
 
         	};
@@ -127,7 +136,7 @@ public class CordovaFacebook extends CordovaPlugin {
         }
         if (action.equals("logout")) {
         	// logout listener
-        	final OnLogoutListener onLogoutListener = new SimpleFacebook.OnLogoutListener()
+        	final OnLogoutListener onLogoutListener = new OnLogoutListener()
         	{
         	    @Override
         	    public void onFail(String reason)
@@ -177,7 +186,7 @@ public class CordovaFacebook extends CordovaPlugin {
         }
         if (action.equals("feed") || action.equals("share")) {
         	// create publish listener
-        	final OnPublishListener onPublishListener = new SimpleFacebook.OnPublishListener()
+        	final OnPublishListener onPublishListener = new OnPublishListener()
         	{
         	    @Override
         	    public void onFail(String reason)
@@ -237,7 +246,7 @@ public class CordovaFacebook extends CordovaPlugin {
         }
 		if (action.equals("invite")) {
 			final String message = args.getString(0); 
-        	final OnInviteListener onInviteListener = new SimpleFacebook.OnInviteListener()
+        	final OnInviteListener onInviteListener = new OnInviteListener()
         	{
 
         	    @Override
@@ -293,7 +302,7 @@ public class CordovaFacebook extends CordovaPlugin {
         	
         	Runnable runnable = new Runnable() {
     			public void run() {
-    				mSimpleFacebook.invite(message, onInviteListener);
+    				mSimpleFacebook.invite(message, onInviteListener, null);
     			};
     		};
     		cordova.getActivity().runOnUiThread(runnable);
@@ -323,7 +332,7 @@ public class CordovaFacebook extends CordovaPlugin {
     }
     public void getUserInfo(final CallbackContext callbackContext) {
     	final SimpleFacebook mSimpleFacebook = SimpleFacebook.getInstance(cordova.getActivity());
-    	OnProfileRequestListener onProfileRequestListener = new SimpleFacebook.OnProfileRequestListener()
+    	OnProfileListener onProfileRequestListener = new OnProfileListener()
     	{
     	    @Override
     	    public void onFail(String reason)
@@ -350,7 +359,7 @@ public class CordovaFacebook extends CordovaPlugin {
     	    @Override
     	    public void onComplete(Profile profile)
     	    {
-    	    	callbackContext.success(profile.getGraphUser().getInnerJSONObject());
+    	    	callbackContext.success(profile.getGraphObject().getInnerJSONObject());
     	    }
 
     	};
