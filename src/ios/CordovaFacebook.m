@@ -232,7 +232,7 @@ static NSMutableArray *publishPermissions;
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         
         // If there's one, just open the session silently, without showing the user the login UI
-        [FBSession openActiveSessionWithReadPermissions:@[@"basic_info"]
+        [FBSession openActiveSessionWithReadPermissions:@[@"public_profile"]
                                            allowLoginUI:NO
                                       completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
                                           // Handler for session state changes
@@ -264,7 +264,7 @@ static NSMutableArray *publishPermissions;
     
     [CordovaFacebook setLoginCallbackId:command.callbackId];
     // Open a session showing the user the login UI
-    // You must ALWAYS ask for basic_info permissions when opening a session
+    // You must ALWAYS ask for public_profile permissions when opening a session
     [FBSession openActiveSessionWithReadPermissions:readPermissions
                                        allowLoginUI:YES
                                   completionHandler:
@@ -313,12 +313,12 @@ static NSMutableArray *publishPermissions;
 
 - (void)share:(CDVInvokedUrlCommand*)command
 {
-    FBShareDialogParams *params = [[FBShareDialogParams alloc] init];
+    FBLinkShareParams *params = [[FBLinkShareParams alloc] init];
     params.name = [command.arguments objectAtIndex:0];
     params.link = [NSURL URLWithString:[command.arguments objectAtIndex:1]];
     params.picture = [NSURL URLWithString:[command.arguments objectAtIndex:2]];
     params.caption = [command.arguments objectAtIndex:3];
-    params.description = [command.arguments objectAtIndex:4];
+    params.linkDescription = [command.arguments objectAtIndex:4];
     BOOL canShare = [FBDialogs canPresentShareDialogWithParams:params];
     if (canShare) {
         // FBDialogs call to open Share dialog
@@ -445,11 +445,18 @@ static NSMutableArray *publishPermissions;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-    
+    NSString *message = @"";
+    if([command.arguments count] > 0 && [command.arguments objectAtIndex:0] != (id)[NSNull null]) {
+        message = [command.arguments objectAtIndex:0];
+    }
+    NSString *title = @"";
+    if([command.arguments count] > 1 && [command.arguments objectAtIndex:1] != (id)[NSNull null]) {
+        title = [command.arguments objectAtIndex:1];
+    }
     NSMutableDictionary* params =   [NSMutableDictionary dictionaryWithObjectsAndKeys: nil];
     [FBWebDialogs presentRequestsDialogModallyWithSession:nil
-                                                  message:[command.arguments objectAtIndex:0]
-                                                    title:[command.arguments objectAtIndex:1]
+                                                  message:message
+                                                    title:title
                                                parameters:params
                                                   handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
                                                       CDVPluginResult* pluginResult = nil;
@@ -475,6 +482,7 @@ static NSMutableArray *publishPermissions;
  */
 + (BOOL)isReadPermission: (NSString*) permission
 {
+    if([permission isEqualToString:@"public_profile"]) return YES;
     if([permission isEqualToString:@"basic_info"]) return YES;
     if([permission isEqualToString:@"user_about_me"]) return YES;
     if([permission isEqualToString:@"friends_about_me"]) return YES;
