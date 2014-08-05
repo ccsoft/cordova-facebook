@@ -20,7 +20,7 @@ Sample app is built and tested with Cordova 3.5 and we only support Cordova vers
 
 We currently tested FacebookSDK for following platforms and versions:
 
-- [FacebookSDK iOS 3.13.1](https://developers.facebook.com/docs/ios/)
+- [FacebookSDK iOS 3.16.1](https://developers.facebook.com/docs/ios/)
 
 - [FacebookSDK Android 3.16.0](https://developers.facebook.com/docs/android/)
 
@@ -105,7 +105,7 @@ Initializes the plugin. Must be called before calling any other function.
 >####example
 
 	plugin.init('YOUR_FB_APP_ID', 'YOUR_FB_APP_NAME', 
-		['basic_info', 'email', 'publish_actions'], 
+		['public_profile', 'email', 'publish_actions'], 
 		function(response) {
 			if(response) {
 				console.log("Access token is: " + response.accessToken);
