@@ -54,6 +54,7 @@ public class CordovaFacebook extends CordovaPlugin {
 			    .setAppId(args.getString(0))
 			    .setNamespace(args.getString(1))
 			    .setPermissions(perms)
+			    .setAskForAllPermissionsAtOnce(true)
 			    .build();
 
 			SimpleFacebook.setConfiguration(facebookConfiguration);
