@@ -62,6 +62,9 @@ static NSMutableArray *publishPermissions;
     if (params == nil) {
         return;
     }
+    if (appId == nil) {
+        return;
+    }
     
     NSURL *url = [params objectForKey:@"url"];
     NSString *scheme = @"fb";
