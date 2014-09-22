@@ -487,6 +487,13 @@ static NSMutableArray *publishPermissions;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
+    NSString *request = @"";
+    if([command.arguments count] > 0 && [command.arguments objectAtIndex:0] != (id)[NSNull null]) {
+        request = [command.arguments objectAtIndex:0];
+    } else {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no request param sent to delete"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }
     
     [FBRequestConnection startWithGraphPath:request
                                  parameters: nil
