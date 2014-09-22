@@ -303,7 +303,6 @@ static NSMutableArray *publishPermissions;
     [[FBRequest requestForMe] startWithCompletionHandler:
      ^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *info, NSError *error) {
          if (!error) {
-             NSLog(@"User info: %@", info);
              CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:info];
              [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
          }
@@ -516,60 +515,33 @@ static NSMutableArray *publishPermissions;
 + (BOOL)isReadPermission: (NSString*) permission
 {
     if([permission isEqualToString:@"public_profile"]) return YES;
-    if([permission isEqualToString:@"basic_info"]) return YES;
-    if([permission isEqualToString:@"user_about_me"]) return YES;
-    if([permission isEqualToString:@"friends_about_me"]) return YES;
-    if([permission isEqualToString:@"user_activities"]) return YES;
-    if([permission isEqualToString:@"friends_activities"]) return YES;
-    if([permission isEqualToString:@"user_birthday"]) return YES;
-    if([permission isEqualToString:@"friends_birthday"]) return YES;
-    if([permission isEqualToString:@"user_checkins"]) return YES;
-    if([permission isEqualToString:@"friends_checkins"]) return YES;
-    if([permission isEqualToString:@"user_education_history"]) return YES;
-    if([permission isEqualToString:@"friends_education_history"]) return YES;
-    if([permission isEqualToString:@"user_events"]) return YES;
-    if([permission isEqualToString:@"friends_events"]) return YES;
-    if([permission isEqualToString:@"user_groups"]) return YES;
-    if([permission isEqualToString:@"friends_groups"]) return YES;
-    if([permission isEqualToString:@"user_hometown"]) return YES;
-    if([permission isEqualToString:@"friends_hometown"]) return YES;
-    if([permission isEqualToString:@"user_interests"]) return YES;
-    if([permission isEqualToString:@"friends_interests"]) return YES;
-    if([permission isEqualToString:@"user_photos"]) return YES;
-    if([permission isEqualToString:@"friends_photos"]) return YES;
-    if([permission isEqualToString:@"user_likes"]) return YES;
-    if([permission isEqualToString:@"friends_likes"]) return YES;
-    if([permission isEqualToString:@"user_notes"]) return YES;
-    if([permission isEqualToString:@"friends_notes"]) return YES;
-    if([permission isEqualToString:@"user_online_presence"]) return YES;
-    if([permission isEqualToString:@"friends_online_presence"]) return YES;
-    if([permission isEqualToString:@"user_religion_politics"]) return YES;
-    if([permission isEqualToString:@"friends_religion_politics"]) return YES;
-    if([permission isEqualToString:@"user_relationships"]) return YES;
-    if([permission isEqualToString:@"friends_relationships"]) return YES;
-    if([permission isEqualToString:@"user_relationship_details"]) return YES;
-    if([permission isEqualToString:@"friends_relationship_details"]) return YES;
-    if([permission isEqualToString:@"user_status"]) return YES;
-    if([permission isEqualToString:@"friends_status"]) return YES;
-    if([permission isEqualToString:@"user_subscriptions"]) return YES;
-    if([permission isEqualToString:@"friends_subscriptions"]) return YES;
-    if([permission isEqualToString:@"user_videos"]) return YES;
-    if([permission isEqualToString:@"friends_videos"]) return YES;
-    if([permission isEqualToString:@"user_website"]) return YES;
-    if([permission isEqualToString:@"friends_website"]) return YES;
-    if([permission isEqualToString:@"user_work_history"]) return YES;
-    if([permission isEqualToString:@"friends_work_history"]) return YES;
-    if([permission isEqualToString:@"user_location"]) return YES;
-    if([permission isEqualToString:@"friends_location"]) return YES;
-    if([permission isEqualToString:@"user_photo_video_tags"]) return YES;
-    if([permission isEqualToString:@"friends_photo_video_tags"]) return YES;
-    if([permission isEqualToString:@"read_friendlists"]) return YES;
-    if([permission isEqualToString:@"read_mailbox"]) return YES;
-    if([permission isEqualToString:@"read_requests"]) return YES;
-    if([permission isEqualToString:@"read_stream"]) return YES;
-    if([permission isEqualToString:@"read_insights"]) return YES;
-    if([permission isEqualToString:@"xmpp_login"]) return YES;
     if([permission isEqualToString:@"email"]) return YES;
+    if([permission isEqualToString:@"user_friends"]) return YES;
+    
+    if([permission isEqualToString:@"user_about_me"]) return YES;
+    if([permission isEqualToString:@"user_actions.books"]) return YES;
+    if([permission isEqualToString:@"user_actions.fitness"]) return YES;
+    if([permission isEqualToString:@"user_actions.music"]) return YES;
+    if([permission isEqualToString:@"user_actions.news"]) return YES;
+    if([permission isEqualToString:@"user_actions.video"]) return YES;
+    if([permission isEqualToString:@"user_activities"]) return YES;
+    if([permission isEqualToString:@"user_birthday"]) return YES;
+    if([permission isEqualToString:@"user_education_history"]) return YES;
+    if([permission isEqualToString:@"user_events"]) return YES;
+    if([permission isEqualToString:@"user_games_activity"]) return YES;
+    if([permission isEqualToString:@"user_groups"]) return YES;
+    if([permission isEqualToString:@"user_hometown"]) return YES;
+    if([permission isEqualToString:@"user_interests"]) return YES;
+    if([permission isEqualToString:@"user_photos"]) return YES;
+    if([permission isEqualToString:@"user_likes"]) return YES;
+    if([permission isEqualToString:@"user_relationships"]) return YES;
+    if([permission isEqualToString:@"user_relationship_details"]) return YES;
+    if([permission isEqualToString:@"user_religion_politics"]) return YES;
+    if([permission isEqualToString:@"user_status"]) return YES;
+    if([permission isEqualToString:@"user_tagged_places"]) return YES;
+    if([permission isEqualToString:@"user_videos"]) return YES;
+    if([permission isEqualToString:@"user_website"]) return YES;
+    if([permission isEqualToString:@"user_work_history"]) return YES;
     
     return NO;
 }
