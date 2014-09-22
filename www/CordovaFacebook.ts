@@ -1,5 +1,7 @@
+/// <reference path='CordovaFacebook.d.ts' />
+
 module CC {
-    export class CordovaFacebook {
+    export class CordovaFacebook implements ICordovaFacebook {
         
         init(appId: string, appNamespace: string, appPermissions: string[], successcb?: (r: any) => void, failcb?: (err: any) => void) {
             if (!(<any>window).cordova) {

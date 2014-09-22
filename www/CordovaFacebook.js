@@ -1,3 +1,4 @@
+/// <reference path='CordovaFacebook.d.ts' />
 var CC;
 (function (CC) {
     var CordovaFacebook = (function () {
