@@ -9,6 +9,8 @@
   <author>CCSoft</author>
   <keywords>facebook,cordova,ccsoft</keywords>
   <license>Apache 2.0 License</license>
+  <preference name="FACEBOOK_APP_ID" />
+  <preference name="FACEBOOK_DISPLAY_NAME" />
 
     <engines>
       <engine name="cordova" version=">=3.0.0" />
@@ -49,6 +51,12 @@
             <feature name="CordovaFacebook">
                 <param name="ios-package" value="CordovaFacebook" />
             </feature>
+        </config-file>
+        <config-file target="*-Info.plist" parent="FacebookAppID">
+            <string>$FACEBOOK_APP_ID</string>
+        </config-file>
+        <config-file target="*-Info.plist" parent="FacebookDisplayName">
+            <string>$FACEBOOK_DISPLAY_NAME</string>
         </config-file>
         <header-file src="src/ios/CordovaFacebook.h" />
         <source-file src="src/ios/CordovaFacebook.m" />

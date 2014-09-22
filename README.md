@@ -27,7 +27,8 @@ We currently tested FacebookSDK for following platforms and versions:
 ##Prerequisites
 
 ###iOS
-Download the latest [FacebookSDK](https://developers.facebook.com/docs/ios/), and follow the [getting started guideline](https://developers.facebook.com/docs/ios/getting-started/). 
+Download the latest [FacebookSDK](https://developers.facebook.com/docs/ios/), and follow the [getting started guideline](https://developers.facebook.com/docs/ios/getting-started/).
+This plugin automatically adds FACEBOOK_APP_ID and FACEBOOK_DISPLAY_NAME to *-Info.plist via variables
 
 The guideline is well documented and people at Facebook may change stuff in the future, so we stick to that instead of fancy cordova plugin hacks (well, cordova people also modify plugin flow too).
 
@@ -46,7 +47,7 @@ Here is what to do for Android before installing our plugin.
 
 ##Installing the plugin
 To add this plugin just type:
-```cordova plugin add https://github.com/ccsoft/cordova-facebook.git```
+```cordova plugin add https://github.com/ccsoft/cordova-facebook.git --variable FACEBOOK_APP_ID=[...] --variable FACEBOOK_DISPLAY_NAME=[...]```
 
 To remove this plugin type:
 ```cordova plugin remove com.ccsoft.plugin.CordovaFacebook```
