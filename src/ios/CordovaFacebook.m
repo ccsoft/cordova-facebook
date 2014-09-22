@@ -486,15 +486,14 @@ static NSMutableArray *publishPermissions;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-    NSString *request = @"";
-    if([command.arguments count] > 0 && [command.arguments objectAtIndex:0] != (id)[NSNull null]) {
-        request = [command.arguments objectAtIndex:0];
-    } else {
+    if([command.arguments count] <= 0 || [command.arguments objectAtIndex:0] == (id)[NSNull null]) {
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no request param sent to delete"];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
     }
     
-    [FBRequestConnection startWithGraphPath:request
+    NSString *request = [NSString stringWithFormat:@"/{%@}", [command.arguments objectAtIndex:0]];
+    [FBRequestConnection startWithGraphPath: request
                                  parameters: nil
                                  HTTPMethod: @"DELETE"
                           completionHandler: ^(FBRequestConnection *connection, id result, NSError *error) {
@@ -504,6 +503,59 @@ static NSMutableArray *publishPermissions;
                               }
                               else {
                                   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"failed to delete request"];
+                                  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                              }
+                          }];
+}
+
+- (void)postScore:(CDVInvokedUrlCommand*)command
+{
+    if([FBSession.activeSession isOpen] == NO) { // not have a session to post
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no active session"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    if([command.arguments count] <= 0 || [command.arguments objectAtIndex:0] == (id)[NSNull null]) {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no score param sent"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    NSMutableDictionary *score = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]], @"score", nil];
+    
+    
+    [FBRequestConnection startWithGraphPath:@"me/scores"
+                                 parameters: score
+                                 HTTPMethod: @"POST"
+                          completionHandler: ^(FBRequestConnection *connection, id result, NSError *error) {
+                              if (!error) {
+                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+                                  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                              }
+                              else {
+                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"failed to post score"];
+                                  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                              }
+                          }];
+}
+
+- (void)getScores:(CDVInvokedUrlCommand*)command
+{
+    if([FBSession.activeSession isOpen] == NO) { // not have a session to post
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no active session"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    
+    [FBRequestConnection startWithGraphPath:@"me/scores"
+                                 parameters: nil
+                                 HTTPMethod: @"GET"
+                          completionHandler: ^(FBRequestConnection *connection, id result, NSError *error) {
+                              if (!error) {
+                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:result];
+                                  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                              }
+                              else {
+                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"failed to get scores"];
                                   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                               }
                           }];
