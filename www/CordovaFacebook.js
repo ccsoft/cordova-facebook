@@ -134,6 +134,42 @@ var CC;
                     failcb(err);
             }, "CordovaFacebook", "deleteRequest", [request]);
         };
+
+        CordovaFacebook.prototype.postScore = function (score, successcb, failcb) {
+            if (!window.cordova) {
+                if (failcb)
+                    failcb("no cordova");
+                return;
+            }
+            window.cordova.exec(function () {
+                if (successcb)
+                    successcb();
+            }, function (err) {
+                console.error("postScore call failed with error: " + err);
+                if (failcb)
+                    failcb(err);
+            }, "CordovaFacebook", "postScore", [score]);
+        };
+
+        CordovaFacebook.prototype.getScores = function (successcb, failcb) {
+            if (!window.cordova) {
+                if (failcb)
+                    failcb("no cordova");
+                return;
+            }
+
+            window.cordova.exec(function (resp) {
+                if (resp && resp.data) {
+                    successcb(resp.data);
+                } else {
+                    successcb(null);
+                }
+            }, function (err) {
+                console.error("getScores call failed with error: " + err);
+                if (failcb)
+                    failcb(err);
+            }, "CordovaFacebook", "getScores", []);
+        };
         return CordovaFacebook;
     })();
     CC.CordovaFacebook = CordovaFacebook;

@@ -130,6 +130,39 @@ module CC {
                     if (failcb) failcb(err);
                 }, "CordovaFacebook", "deleteRequest", [request]);
         }
+
+        postScore(score: number, successcb?: () => void, failcb?: (err: any) => void) {
+            if (!(<any>window).cordova) {
+                if (failcb) failcb("no cordova");
+                return;
+            }
+            (<any>window).cordova.exec(
+                () => {
+                    if (successcb) successcb();
+                },
+                (err) => {
+                    console.error("postScore call failed with error: " + err);
+                    if (failcb) failcb(err);
+                }, "CordovaFacebook", "postScore", [score]);
+        }
+
+        getScores(successcb: (scores: any[]) => void, failcb?: (err: any) => void) {
+            if (!(<any>window).cordova) {
+                if (failcb) failcb("no cordova");
+                return;
+            }
+
+            (<any>window).cordova.exec((resp) => {
+                if (resp && resp.data) {
+                    successcb(resp.data);
+                } else {
+                    successcb(null);
+                }
+            }, (err) => {
+                    console.error("getScores call failed with error: " + err);
+                    if (failcb) failcb(err);
+                }, "CordovaFacebook", "getScores", []);
+        }
     }
 }
 

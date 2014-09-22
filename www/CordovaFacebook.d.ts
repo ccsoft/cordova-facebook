@@ -7,6 +7,8 @@ declare module CC {
         feed: (name: string, webUrl: string, logoUrl: string, caption: string, description: string, successcb?: (r: any) => void, failcb?: (err: any) => void) => void;
         share: (name: string, webUrl: string, logoUrl: string, caption: string, description: string, successcb?: () => void, failcb?: (err: any) => void) => void;
         invite: (message: string, title: string, successcb: (req: any) => void, failcb?: (err: any) => void) => void;
-        deleteRequest(request: string, successcb?: () => void, failcb?: (err: any) => void): void;
+        deleteRequest: (request: string, successcb?: () => void, failcb?: (err: any) => void) => void;
+        postScore: (score: number, successcb?: () => void, failcb?: (err: any) => void) => void;
+        getScores: (successcb: (scores: any[]) => void, failcb?: (err: any) => void) => void;
     }
 }

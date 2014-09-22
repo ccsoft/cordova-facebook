@@ -38,7 +38,7 @@ Here is what to do for Android before installing our plugin.
 
 ##Installing the plugin
 To add this plugin just type:
-```cordova plugin add https://github.com/ccsoft/cordova-facebook.git```
+```cordova plugin add com.ccsoft.plugin.CordovaFacebook```
 
 To remove this plugin type:
 ```cordova plugin remove com.ccsoft.plugin.CordovaFacebook```
@@ -88,7 +88,9 @@ The plugin has the following methods:
 * [share](#share)
 * [feed](#feed)
 * [invite](#invite)
-* [deleteRequest](#deleteRequest)
+* [deleteRequest](#deleterequest)
+* [postScore](#postscore)
+* [getScores](#getscores)
 
 *** 
 
@@ -275,6 +277,58 @@ For implementation details:
 - Facebook documentation on requests with Graph API [here](https://developers.facebook.com/docs/graph-api/reference/v2.1/request) (scroll to deleting)
 - See Android (Simple Facebook) implementation details [here](https://github.com/sromku/android-simple-facebook#delete-requestinvite)
 
+***
+
+###postScore
+Post score for the user. Note that your app should be classified as a game in Facebook app settings.
+
+>####parameters
+		
+>>*score*: number: integer score value.
+
+>>*successCallback*: function: returns nothing.
+
+>>*failureCallback*: function: Called with failure reason string.
+
+>####example
+
+	plugin.postScore(score, successCallback, failureCallback);
+
+For implementation details: 
+- Facebook documentation on Scores API [here](https://developers.facebook.com/docs/games/scores)
+
+***
+
+###getScores
+Gets the score for the user and his/her friends. Note that your app should be classified as a game in Facebook app settings.
+
+>####parameters
+		
+>>*scores*: []: json array of scores, each object in array contains *score* and *user* as follows: 
+    
+>>> *score*: number; // best score of that user
+
+>>> *user.id*: string; // user id
+
+>>> *user.name*: string; // user name
+
+>>*successCallback*: function: returns nothing.
+
+>>*failureCallback*: function: Called with failure reason string.
+
+>####example
+
+	plugin.getScores(function(resp) {
+        for (var i = 0; i < resp.length; i++) {
+            console.log("Score Order: " + i);
+            console.log("User Id: " + resp[i].user.id);
+            console.log("User Name: " + resp[i].user.name);
+            console.log("Score: " + resp[i].score);
+        }		
+	}, failureCallback);
+
+For implementation details: 
+- Facebook documentation on Scores API [here](https://developers.facebook.com/docs/games/scores)
 
 ***
 
