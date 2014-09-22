@@ -480,6 +480,29 @@ static NSMutableArray *publishPermissions;
                                               friendCache:nil];
 }
 
+- (void)deleteRequest:(CDVInvokedUrlCommand*)command
+{
+    if([FBSession.activeSession isOpen] == NO) { // not have a session to post
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no active session"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    
+    [FBRequestConnection startWithGraphPath:request
+                                 parameters: nil
+                                 HTTPMethod: @"DELETE"
+                          completionHandler: ^(FBRequestConnection *connection, id result, NSError *error) {
+                              if (!error) {
+                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+                                  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                              }
+                              else {
+                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"failed to delete request"];
+                                  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                              }
+                          }];
+}
+
 /*
  I hope someday Facebook SDK will have a better method for this.
  */
