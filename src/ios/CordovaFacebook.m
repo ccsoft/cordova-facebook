@@ -492,7 +492,7 @@ static NSMutableArray *publishPermissions;
         return;
     }
     
-    NSString *request = [NSString stringWithFormat:@"/{%@}", [command.arguments objectAtIndex:0]];
+    NSString *request = [NSString stringWithFormat:@"/%@", [command.arguments objectAtIndex:0]];
     [FBRequestConnection startWithGraphPath: request
                                  parameters: nil
                                  HTTPMethod: @"DELETE"
@@ -523,7 +523,7 @@ static NSMutableArray *publishPermissions;
     NSMutableDictionary *score = [NSMutableDictionary dictionaryWithObjectsAndKeys: [NSString stringWithFormat:@"%@", [command.arguments objectAtIndex:0]], @"score", nil];
     
     
-    [FBRequestConnection startWithGraphPath:@"me/scores"
+    [FBRequestConnection startWithGraphPath:@"/me/scores"
                                  parameters: score
                                  HTTPMethod: @"POST"
                           completionHandler: ^(FBRequestConnection *connection, id result, NSError *error) {
@@ -546,7 +546,7 @@ static NSMutableArray *publishPermissions;
         return;
     }
     
-    [FBRequestConnection startWithGraphPath:@"me/scores"
+    [FBRequestConnection startWithGraphPath:@"/me/scores"
                                  parameters: nil
                                  HTTPMethod: @"GET"
                           completionHandler: ^(FBRequestConnection *connection, id result, NSError *error) {
