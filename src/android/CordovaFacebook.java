@@ -59,13 +59,20 @@ public class CordovaFacebook extends CordovaPlugin {
 
 			SimpleFacebook.setConfiguration(facebookConfiguration);
 			
-			SimpleFacebook simpleFB = SimpleFacebook.getInstance(cordova.getActivity());
-			if(simpleFB.isLogin()) {
-				JSONObject resp = prepareAccessTokenInfo(simpleFB.getSession());
-				callbackContext.success(resp);
-			} else {
-				callbackContext.success("");
-			}
+			Runnable runnable = new Runnable() {
+    			public void run() {
+    				SimpleFacebook simpleFB = SimpleFacebook.getInstance(cordova.getActivity());
+    				if(simpleFB.isLogin()) {
+    					JSONObject resp = prepareAccessTokenInfo(simpleFB.getSession());
+    					callbackContext.success(resp);
+    				} else {
+    		    		Log.i(TAG, "no user logged in yet");
+    					callbackContext.success("");
+    				}
+    			};
+    		};
+    		cordova.getActivity().runOnUiThread(runnable);
+    		
 			return true;
     	}
     	
