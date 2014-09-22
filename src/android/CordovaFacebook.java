@@ -15,6 +15,7 @@ import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.SimpleFacebookConfiguration;
 import com.sromku.simple.fb.entities.Feed;
 import com.sromku.simple.fb.entities.Profile;
+import com.sromku.simple.fb.listeners.OnDeleteListener;
 import com.sromku.simple.fb.listeners.OnInviteListener;
 import com.sromku.simple.fb.listeners.OnLoginListener;
 import com.sromku.simple.fb.listeners.OnLogoutListener;
@@ -304,6 +305,50 @@ public class CordovaFacebook extends CordovaPlugin {
         	Runnable runnable = new Runnable() {
     			public void run() {
     				mSimpleFacebook.invite(message, onInviteListener, null);
+    			};
+    		};
+    		cordova.getActivity().runOnUiThread(runnable);
+        	
+			return true;
+        } 
+		else if (action.equals("deleteRequest")) {
+
+        	final String req = args.getString(0);
+        	// logout listener
+        	final OnDeleteListener onDeleteRequestListener = new OnDeleteListener()
+        	{
+        	    @Override
+        	    public void onFail(String reason)
+        	    {
+        	        Log.w(TAG, reason);
+        	        callbackContext.error(reason);
+        	    }
+
+        	    @Override
+        	    public void onException(Throwable throwable)
+        	    {
+        	        Log.e(TAG, "Bad thing happened", throwable);
+        	        callbackContext.error("exception");
+        	    }
+
+        	    @Override
+        	    public void onThinking()
+        	    {
+        	        // show progress bar or something to the user while login is happening
+        	        Log.i(TAG, "In progress");        	        
+        	    }
+
+        	    @Override
+        	    public void onComplete(Void response)
+        	    {
+        	        Log.i(TAG, "Deleted request " + req);
+        	        callbackContext.success();
+        	    }
+        	};
+
+        	Runnable runnable = new Runnable() {
+    			public void run() {
+    				mSimpleFacebook.deleteRequest(req, onDeleteRequestListener);
     			};
     		};
     		cordova.getActivity().runOnUiThread(runnable);

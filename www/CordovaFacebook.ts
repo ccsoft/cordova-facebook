@@ -115,6 +115,21 @@ module CC {
                     if (failcb) failcb(err);
                 }, "CordovaFacebook", "invite", [message, title]);            
         }
+
+        deleteRequest(request: string, successcb?: () => void, failcb?: (err: any) => void) {
+            if (!(<any>window).cordova) {
+                if (failcb) failcb("no cordova");
+                return;
+            }
+            (<any>window).cordova.exec(
+                () => {
+                    if (successcb) successcb();
+                },
+                (err) => {
+                    console.error("deleteRequest call failed with error: " + err);
+                    if (failcb) failcb(err);
+                }, "CordovaFacebook", "deleteRequest", [request]);
+        }
     }
 }
 

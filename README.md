@@ -5,7 +5,7 @@ cordova-facebook
 
 Project uses mobile native platform FacebookSDK for iOS and Android to utilize basic operations for a mobile app that uses Cordova. 
 
-We also provide [TypeScript](http://www.typescriptlang.org/) source file together with the JavaScript for the client side with this plugin.
+We also provide [TypeScript](http://www.typescriptlang.org/) source and type definition files together with the JavaScript for the client side with this plugin.
 
 ##Why?
 - Why do we implement another plugin since there is already an official [phonegap-facebook-plugin](https://github.com/phonegap/phonegap-facebook-plugin)?
@@ -245,6 +245,30 @@ invite call requires an active session. Shows facebook invite dialog and returns
 For implementation details: 
 - See iOS documentation [here](https://developers.facebook.com/docs/games/mobile/ios-tutorial/#requests)
 - See Android implementation details [here](https://github.com/sromku/android-simple-facebook#invite)
+
+
+***
+
+###deleteRequest
+When sending requests to friends in Facebook, you are also responsible to delete these requests, once the invitee responds. 
+The procedure is explained in Facebook SDK documentation [here](https://developers.facebook.com/docs/games/requests/v2.1#deleting).
+
+>####parameters
+		
+>>*request*: string: Request to delete, note that it should be of the form: "requestid_fbuserid", you MUST concatenate these two manually on your js side!
+
+>>*successCallback*: function: returns nothing.
+
+>>*failureCallback*: function: Called with failure reason string.
+
+>####example
+
+	plugin.deleteRequest(requestId + '_' + fbuserId, successCallback, failureCallback);
+
+For implementation details: 
+- Facebook documentation on deleting requests [here](https://developers.facebook.com/docs/games/requests/v2.1#deleting)
+- Facebook documentation on requests with Graph API [here](https://developers.facebook.com/docs/graph-api/reference/v2.1/request) (scroll to deleting)
+- See Android (Simple Facebook) implementation details [here](https://github.com/sromku/android-simple-facebook#delete-requestinvite)
 
 
 ***
