@@ -52,22 +52,34 @@ To remove this plugin type:
 ```cordova plugin remove com.ccsoft.plugin.CordovaFacebook```
 
 ##Usage
-Add the following block to your AppDelegate.m
+Replace the openURL method in your AppDelegate.m (if already exists, add it otherwise) with the following code block 
 
-	// During the Facebook login flow, your app passes control to the Facebook iOS app or Facebook in a mobile browser.
-	// After authentication, your app will be called back with the session information.
-	- (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)url
-  	sourceApplication:(NSString *)sourceApplication
-         	annotation:(id)annotation
-	{
-    	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                          url, @"url", sourceApplication, @"sourceApplication", @"NO", @"success", nil];
-    	[[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"CordovaPluginOpenURLNotification" object:self userInfo:dict]];
-    
-    	NSString* success = [dict objectForKey:@"success"];
-    	return ![success isEqualToString:@"NO"];
-	}
+        - (BOOL)application:(UIApplication *)application
+                    openURL:(NSURL *)url
+            sourceApplication:(NSString *)sourceApplication
+                    annotation:(id)annotation
+        {
+            if (!url) {
+                return NO;
+            }
+
+            NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                            url, @"url", sourceApplication, @"sourceApplication", @"NO", @"success", nil];
+            [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"CordovaPluginOpenURLNotification" object:self userInfo:dict]];
+
+            NSString* success = [dict objectForKey:@"success"];
+
+            if([success isEqualToString:@"NO"]) {
+                // calls into javascript global function 'handleOpenURL'
+                NSString* jsString = [NSString stringWithFormat:@"handleOpenURL(\"%@\");", url];
+                [self.viewController.webView stringByEvaluatingJavaScriptFromString:jsString];
+
+                // all plugins will get the notification, and their handlers will be called
+                [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:CDVPluginHandleOpenURLNotification object:url]];
+                return YES;
+            }
+            return ![success isEqualToString:@"NO"];
+        }
 
 Then, in your js file (probably in index.js)
 
@@ -84,6 +96,7 @@ The plugin has the following methods:
 * [share](#share)
 * [feed](#feed)
 * [invite](#invite)
+* [deleteRequest](#deleteRequest)
 
 *** 
 
