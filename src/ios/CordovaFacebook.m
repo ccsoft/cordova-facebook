@@ -213,40 +213,47 @@ static NSMutableArray *publishPermissions;
 
 - (void)init:(CDVInvokedUrlCommand*)command
 {
+    NSLog(@"FB SDK: %@", [FBSettings sdkVersion]);
+    if([command.arguments count] > 0 && [command.arguments objectAtIndex:0] != (id)[NSNull null]) {
+        appId = [command.arguments objectAtIndex:0];
+    } else {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no appId sent to init"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    
     [CordovaFacebook setLoginCallbackId:command.callbackId];
     [CordovaFacebook setCommandDelegate:self.commandDelegate];
-    appId = [command.arguments objectAtIndex:0];
-//    NSString* appNamespace = [command.arguments objectAtIndex:1];
     
-    NSLog(@"FB SDK: %@", [FBSettings sdkVersion]);
-    
-    NSArray* appPermissions = [command.arguments objectAtIndex:2];
-    readPermissions = [[NSMutableArray alloc] init];
-    publishPermissions = [[NSMutableArray alloc] init];
-    for (NSString* perm in appPermissions) {
-        if([CordovaFacebook isReadPermission:perm]) {
-            [readPermissions addObject:perm];
-        } else {
-            [publishPermissions addObject:perm];
+    [self.commandDelegate runInBackground:^{
+        NSArray* appPermissions = [command.arguments objectAtIndex:2];
+        readPermissions = [[NSMutableArray alloc] init];
+        publishPermissions = [[NSMutableArray alloc] init];
+        for (NSString* perm in appPermissions) {
+            if([CordovaFacebook isReadPermission:perm]) {
+                [readPermissions addObject:perm];
+            } else {
+                [publishPermissions addObject:perm];
+            }
         }
-    }
-    
-    // Whenever a person inits, check for a cached session
-    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
         
-        // If there's one, just open the session silently, without showing the user the login UI
-        [FBSession openActiveSessionWithReadPermissions:readPermissions
-                                           allowLoginUI:NO
-                                      completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
-                                          // Handler for session state changes
-                                          // This method will be called EACH time the session state changes,
-                                          // also for intermediate states and NOT just when the session open
-                                          [CordovaFacebook sessionStateChanged:session state:state error:error];
-                                      }];
-    } else {
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    }
+        // Whenever a person inits, check for a cached session
+        if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+            
+            // If there's one, just open the session silently, without showing the user the login UI
+            [FBSession openActiveSessionWithReadPermissions:readPermissions
+                                               allowLoginUI:NO
+                                          completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
+                                              // Handler for session state changes
+                                              // This method will be called EACH time the session state changes,
+                                              // also for intermediate states and NOT just when the session open
+                                              [CordovaFacebook sessionStateChanged:session state:state error:error];
+                                          }];
+        } else {
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        }
+    }];
 }
 
 - (void)login:(CDVInvokedUrlCommand*)command
@@ -264,32 +271,35 @@ static NSMutableArray *publishPermissions;
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-    
-    [CordovaFacebook setLoginCallbackId:command.callbackId];
-    // Open a session showing the user the login UI
-    // You must ALWAYS ask for public_profile permissions when opening a session
-    [FBSession openActiveSessionWithReadPermissions:readPermissions
-                                       allowLoginUI:YES
-                                  completionHandler:
-     ^(FBSession *session, FBSessionState state, NSError *error) {
-         // Call the app delegate's sessionStateChanged:state:error method to handle session state changes
-         [CordovaFacebook sessionStateChanged:session state:state error:error];
-     }];
+    [self.commandDelegate runInBackground:^{
+        [CordovaFacebook setLoginCallbackId:command.callbackId];
+        // Open a session showing the user the login UI
+        // You must ALWAYS ask for public_profile permissions when opening a session
+        [FBSession openActiveSessionWithReadPermissions:readPermissions
+                                           allowLoginUI:YES
+                                      completionHandler:
+         ^(FBSession *session, FBSessionState state, NSError *error) {
+             // Call the app delegate's sessionStateChanged:state:error method to handle session state changes
+             [CordovaFacebook sessionStateChanged:session state:state error:error];
+         }];
+    }];
 }
 
 - (void)logout:(CDVInvokedUrlCommand*)command
 {
-    // If the session state is any of the two "open" states when the button is clicked
-    if (FBSession.activeSession.state == FBSessionStateOpen
-        || FBSession.activeSession.state == FBSessionStateOpenTokenExtended) {
+    [self.commandDelegate runInBackground:^{
+        // If the session state is any of the two "open" states when the button is clicked
+        if (FBSession.activeSession.state == FBSessionStateOpen
+            || FBSession.activeSession.state == FBSessionStateOpenTokenExtended) {
+            
+            // Close the session and remove the access token from the cache
+            // The session state handler (in the app delegate) will be called automatically
+            [FBSession.activeSession closeAndClearTokenInformation];
+        }
         
-        // Close the session and remove the access token from the cache
-        // The session state handler (in the app delegate) will be called automatically
-        [FBSession.activeSession closeAndClearTokenInformation];
-    }
-    
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
 }
 
 - (void)info:(CDVInvokedUrlCommand*)command
