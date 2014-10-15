@@ -7,6 +7,8 @@
 	<name>CordovaFacebook</name>
   <description>Cordova plugin that handles Facebook integration in mobile apps.</description>
   <author>CCSoft</author>
+  <repo>https://github.com/ccsoft/cordova-facebook/</repo>
+  <issue>https://github.com/ccsoft/cordova-facebook/issues</issue>
   <keywords>facebook,cordova,ccsoft</keywords>
   <license>Apache 2.0 License</license>
 
