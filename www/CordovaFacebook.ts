@@ -163,6 +163,20 @@ module CC {
                     if (failcb) failcb(err);
                 }, "CordovaFacebook", "getScores", []);
         }
+
+        graphCall(node: string, params: any, method: string, successcb: (data: any) => void, failcb?: (err: any) => void) {
+            if (!(<any>window).cordova) {
+                if (failcb) failcb("no cordova");
+                return;
+            }
+
+            (<any>window).cordova.exec((resp) => {
+                successcb(resp);
+            }, (err) => {
+                    console.error("getGraph call failed with error: " + err);
+                    if (failcb) failcb(err);
+                }, "CordovaFacebook", "graphCall", [node, params, method]);
+        }
     }
 }
 

@@ -32,6 +32,7 @@
 - (void)deleteRequest:(CDVInvokedUrlCommand*)command;
 - (void)postScore:(CDVInvokedUrlCommand*)command;
 - (void)getScores:(CDVInvokedUrlCommand*)command;
+- (void)graphCall:(CDVInvokedUrlCommand*)command;
 
 + (void)sessionStateChanged:(FBSession *)session state:(FBSessionState) state error:(NSError *)error;
 + (BOOL)isReadPermission: (NSString*) permission;

@@ -1,6 +1,7 @@
 package com.ccsoft.plugin;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.cordova.CallbackContext;
@@ -9,7 +10,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.facebook.FacebookRequestError;
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
+import com.facebook.model.GraphObject;
 import com.sromku.simple.fb.Permission;
 import com.sromku.simple.fb.SimpleFacebook;
 import com.sromku.simple.fb.SimpleFacebookConfiguration;
@@ -26,6 +32,7 @@ import com.sromku.simple.fb.listeners.OnPublishListener;
 import com.sromku.simple.fb.listeners.OnScoresListener;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 public class CordovaFacebook extends CordovaPlugin {
@@ -444,7 +451,7 @@ public class CordovaFacebook extends CordovaPlugin {
 	        	    	}
 	
 	        	        JSONObject r = new JSONObject();
-	        	        	r.put("data", jsonScores);    					
+	        	        r.put("data", jsonScores);    					
 	    				callbackContext.success(r);
         	    	} catch (JSONException e) {
     					Log.e(TAG, "Bad thing happened with get scores json", e);
@@ -461,6 +468,48 @@ public class CordovaFacebook extends CordovaPlugin {
     		cordova.getActivity().runOnUiThread(runnable);
         	
 			return true;
+        } else if (action.equals("graphCall")) {
+        	if(args.length() < 3) {
+        		callbackContext.error("not enough params");
+        		return true;
+        	} 
+
+       		String node = args.getString(0);
+       		JSONObject fields = args.getJSONObject(1);
+        	String methodString = args.getString(2);
+        	
+        	// decide on http method
+        	HttpMethod method = HttpMethod.GET;
+        	if(methodString != null) {
+        		if(methodString.equals("POST")) method = HttpMethod.POST;
+        		if(methodString.equals("DELETE")) method = HttpMethod.DELETE;
+        	}
+        	        	
+        	// process params
+        	final Bundle bundle = new Bundle();
+        	if(fields != null) {
+        		Iterator<?> keys = fields.keys();
+                while( keys.hasNext() ){
+                    String key = (String)keys.next();
+                    bundle.putString(key, fields.getString(key));                   
+                }        		
+        	}
+        	
+        	Request request = new Request(Session.getActiveSession(), node, bundle, method, new Request.Callback() {
+        		public void onCompleted(Response response) {
+			        FacebookRequestError error = response.getError();
+			        if(error != null) {
+			        	Log.e("Error", error.getErrorMessage());
+			        	callbackContext.error(error.getErrorMessage());
+			        	return;
+			        }
+			        GraphObject graphObject = response.getGraphObject();        	                
+			        callbackContext.success(graphObject.getInnerJSONObject());
+    			}
+			});
+
+        	request.executeAsync();
+        	return true;   
         }
         return false;
     }

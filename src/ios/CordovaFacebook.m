@@ -571,6 +571,52 @@ static NSMutableArray *publishPermissions;
                           }];
 }
 
+- (void)graphCall:(CDVInvokedUrlCommand*)command
+{
+    if([FBSession.activeSession isOpen] == NO) { // not have a session to post
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no active session"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    
+    if([command.arguments count] < 3) {
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not enough params"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    
+    if([command.arguments objectAtIndex:0] == (id)[NSNull null]){
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"no graph path set"];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        return;
+    }
+    NSString* path = [command.arguments objectAtIndex:0];
+    
+    NSDictionary* params = nil;
+    if([command.arguments objectAtIndex:1] != (id)[NSNull null]) {
+        params = [command.arguments objectAtIndex:1];
+    }
+    
+    NSString* method = nil;
+    if([command.arguments objectAtIndex:2] != (id)[NSNull null]) {
+        method = [command.arguments objectAtIndex:2];
+    }
+    
+    [FBRequestConnection startWithGraphPath:path
+                                 parameters:params
+                                 HTTPMethod:method
+                          completionHandler: ^(FBRequestConnection *connection, id result, NSError *error) {
+                              if (!error) {
+                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:result];
+                                  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                              }
+                              else {
+                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"failed to get graph result"];
+                                  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                              }
+                          }];
+}
+
 /*
  I hope someday Facebook SDK will have a better method for this.
  */

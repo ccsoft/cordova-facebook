@@ -8,7 +8,7 @@ Project uses mobile native platform FacebookSDK for iOS and Android to utilize b
 We also provide [TypeScript](http://www.typescriptlang.org/) source and type definition files together with the JavaScript for the client side with this plugin.
 
 ##Versions
-Sample app is built and tested with Cordova 3.5 and we only support Cordova version > 3.0.
+Sample app is built and tested with Cordova 3.6.3 (Android and iOS) and we only support Cordova version > 3.0.
 
 We currently tested FacebookSDK for following platforms and versions:
 
@@ -30,7 +30,7 @@ For Android we rely on [Android Simple Facebook](https://github.com/sromku/andro
 
 Here is what to do for Android before installing our plugin.
 
-1. Clone [Facebook SDK 3.16.0](https://github.com/facebook/facebook-android-sdk) or [download](https://developers.facebook.com/android/) it. Then, import the project to your workspace.
+1. Clone [Facebook SDK 3.18.0](https://github.com/facebook/facebook-android-sdk) or [download](https://developers.facebook.com/android/) it. Then, import the project to your workspace.
 
 2. Add reference from your project to `FacebookSDK` project.
 
@@ -91,6 +91,7 @@ The plugin has the following methods:
 * [deleteRequest](#deleterequest)
 * [postScore](#postscore)
 * [getScores](#getscores)
+* [graphCall](#graphcall)
 
 *** 
 
@@ -331,6 +332,34 @@ For implementation details:
 - Facebook documentation on Scores API [here](https://developers.facebook.com/docs/games/scores)
 
 ***
+
+###graphCall
+Makes a call to graph API using FB SDK.
+
+>####parameters
+		
+>>*node*: string: The graph path
+    
+>>> *params*: JSON Object; // params to be passed, eg: to get the name of a friend {"fields": "name"} 
+
+>>> *method*: string; // one of "GET", "POST", "DELETE"
+
+>>*successCallback*: function: returns result if any.
+
+>>*failureCallback*: function: Called with failure reason string.
+
+>####example
+
+	plugin.graphCall("me", {"fields": "name,id"}, "GET", function(resp) {
+           console.log("My name is: " + resp.name + " and id is: " + resp.id);
+       }		
+	}, failureCallback);
+
+For implementation details: 
+- Facebook documentation on Scores API [here](https://developers.facebook.com/docs/games/scores)
+
+***
+
 
 ##Sample App
 We have a sample cordova app to test the plugin that you can find [here](https://github.com/ccsoft/cordova-sample/tree/facebook). Please note that the link takes you to a dedicated branch named facebook, please use that branch to test this plugin. We use separate branches for each plugin we implement.

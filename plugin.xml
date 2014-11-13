@@ -2,7 +2,7 @@
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	id="com.ccsoft.plugin.CordovaFacebook"
-	version="1.0.3">
+	version="1.1.0">
 
 	<name>CordovaFacebook</name>
   <description>Cordova plugin that handles Facebook integration in mobile apps.</description>
@@ -26,7 +26,7 @@
 		<source-file src="src/android/CordovaFacebook.java" 
                  target-dir="src/com/ccsoft/plugin" />
 
-    <source-file src="src/android/simple.facebook-2.1.jar"
+    <source-file src="src/android/simple.facebook-2.2.jar"
                  target-dir="libs" />
     
     <config-file target="AndroidManifest.xml" parent="/*">

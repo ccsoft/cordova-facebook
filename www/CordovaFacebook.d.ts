@@ -10,5 +10,6 @@ declare module CC {
         deleteRequest: (request: string, successcb?: () => void, failcb?: (err: any) => void) => void;
         postScore: (score: number, successcb?: () => void, failcb?: (err: any) => void) => void;
         getScores: (successcb: (scores: any[]) => void, failcb?: (err: any) => void) => void;
+        graphCall: (node: string, params: any, method: string, successcb: (data: any) => void, failcb?: (err: any) => void) => void;
     }
 }

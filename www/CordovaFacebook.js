@@ -170,6 +170,22 @@ var CC;
                     failcb(err);
             }, "CordovaFacebook", "getScores", []);
         };
+
+        CordovaFacebook.prototype.graphCall = function (node, params, method, successcb, failcb) {
+            if (!window.cordova) {
+                if (failcb)
+                    failcb("no cordova");
+                return;
+            }
+
+            window.cordova.exec(function (resp) {
+                successcb(resp);
+            }, function (err) {
+                console.error("getGraph call failed with error: " + err);
+                if (failcb)
+                    failcb(err);
+            }, "CordovaFacebook", "graphCall", [node, params, method]);
+        };
         return CordovaFacebook;
     })();
     CC.CordovaFacebook = CordovaFacebook;
