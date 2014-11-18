@@ -237,11 +237,23 @@ static NSMutableArray *publishPermissions;
             }
         }
         
-        // Whenever a person inits, check for a cached session
-        if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
-            
-            // If there's one, just open the session silently, without showing the user the login UI
-            [FBSession openActiveSessionWithReadPermissions:readPermissions
+        BOOL effectivelyLoggedIn;
+        switch (FBSession.activeSession.state) {
+            case FBSessionStateOpen:
+            case FBSessionStateCreatedTokenLoaded:
+            case FBSessionStateOpenTokenExtended:
+                effectivelyLoggedIn = YES;
+                break;
+            default:
+                effectivelyLoggedIn = NO;
+                break;
+        }
+        
+        if(effectivelyLoggedIn) {
+            // Whenever a person inits, check for a cached session
+            if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+                // If there's one, just open the session silently, without showing the user the login UI
+                [FBSession openActiveSessionWithReadPermissions:readPermissions
                                                allowLoginUI:NO
                                           completionHandler:^(FBSession *session, FBSessionState state, NSError *error) {
                                               // Handler for session state changes
@@ -249,6 +261,9 @@ static NSMutableArray *publishPermissions;
                                               // also for intermediate states and NOT just when the session open
                                               [CordovaFacebook sessionStateChanged:session state:state error:error];
                                           }];
+            } else {
+                [CordovaFacebook reportLogin];
+            }
         } else {
             CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@""];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
