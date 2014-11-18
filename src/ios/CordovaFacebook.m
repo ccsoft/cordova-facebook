@@ -571,12 +571,12 @@ static NSMutableArray *publishPermissions;
         return;
     }
     
-    [FBRequestConnection startWithGraphPath:@"/me/scores"
+    [FBRequestConnection startWithGraphPath:[NSString stringWithFormat:@"/%@/scores", [CordovaFacebook appId]]
                                  parameters: nil
                                  HTTPMethod: @"GET"
                           completionHandler: ^(FBRequestConnection *connection, id result, NSError *error) {
                               if (!error) {
-                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:result];
+                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
                                   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                               }
                               else {
@@ -622,7 +622,7 @@ static NSMutableArray *publishPermissions;
                                  HTTPMethod:method
                           completionHandler: ^(FBRequestConnection *connection, id result, NSError *error) {
                               if (!error) {
-                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:result];
+                                  CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:result];
                                   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                               }
                               else {
