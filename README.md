@@ -7,7 +7,7 @@ Project uses mobile native platform FacebookSDK for iOS and Android to utilize b
 
 We also provide [TypeScript](http://www.typescriptlang.org/) source and type definition files together with the JavaScript for the client side with this plugin.
 
-##Versions
+## Versions
 Sample app is built and tested with Cordova 3.6.3 (Android and iOS) and we only support Cordova version > 3.0.
 
 We currently tested FacebookSDK for following platforms and versions:
@@ -16,14 +16,14 @@ We currently tested FacebookSDK for following platforms and versions:
 
 - [FacebookSDK Android 3.23](https://developers.facebook.com/docs/android/)
 
-##Prerequisites
+## Prerequisites
 
-###iOS
+### iOS
 Download the latest [FacebookSDK](https://developers.facebook.com/docs/ios/), and follow the [getting started guideline](https://developers.facebook.com/docs/ios/getting-started/).
 
 The guideline is well documented and people at Facebook may change stuff in the future, so we stick to that instead of fancy cordova plugin hacks (well, cordova people also modify plugin flow too).
 
-###Android
+### Android
 
 Unlike iOS, Android [getting started guideline](https://developers.facebook.com/docs/android/getting-started/) is pretty long and scary.
 For Android we rely on [Android Simple Facebook](https://github.com/sromku/android-simple-facebook) by [Roman Kushnarenko](https://github.com/sromku), many thanks for that project. We distribute the compiled version (2.2) of the library with the plugin, so you don't have to worry about anything.
@@ -36,14 +36,14 @@ Here is what to do for Android before installing our plugin.
 
     ![Screenshot](https://github.com/sromku/android-simple-facebook/wiki/images/reference_to_sdk.png)
 
-##Installing the plugin
+## Installing the plugin
 To add this plugin just type:
 ```cordova plugin add https://github.com/ccsoft/cordova-facebook```
 
 To remove this plugin type:
 ```cordova plugin remove com.ccsoft.plugin.CordovaFacebook```
 
-##Usage
+## Usage
 Replace the openURL method in your AppDelegate.m (if already exists, add it otherwise) with the following code block
 
         - (BOOL)application:(UIApplication *)application
@@ -95,7 +95,7 @@ The plugin has the following methods:
 
 ***
 
-###init
+### init
 Initializes the plugin. Must be called before calling any other function.
 
 >####parameters
@@ -124,7 +124,7 @@ Initializes the plugin. Must be called before calling any other function.
 
 ***
 
-###login
+### login
 
 >####parameters
 
@@ -142,7 +142,7 @@ Initializes the plugin. Must be called before calling any other function.
 
 ***
 
-###logout
+### logout
 
 >####parameters
 
@@ -154,7 +154,7 @@ Initializes the plugin. Must be called before calling any other function.
 
 ***
 
-###info
+### info
 Retrieves user info.
 See [FBGraphUser](https://developers.facebook.com/docs/reference/ios/current/protocol/FBGraphUser/) documentation for successCallback parameter in iOS.
 See the example below for Android. (They must be equiavelent, let us know if there are differences.)
@@ -180,7 +180,7 @@ See the example below for Android. (They must be equiavelent, let us know if the
 
 ***
 
-###share
+### share
 * iOS: share call tries to open share dialog via official Facebook app. If Facebook app is not installed on device, we fallback to [feed](#feed) call.
 * Android: share behaves exactly the same as [feed](#feed).
 
@@ -207,7 +207,7 @@ See the example below for Android. (They must be equiavelent, let us know if the
 
 ***
 
-###feed
+### feed
 feed call requires an active session. Shows facebook web dialog as a popup on iOS and uses open graph on Android. On Android, we will support dialog whem *Simple Facebook* library supports it.
 
 >####parameters
@@ -233,7 +233,7 @@ feed call requires an active session. Shows facebook web dialog as a popup on iO
 
 ***
 
-###invite
+### invite
 invite call requires an active session. Shows facebook invite dialog and returns the invitation response.
 
 >####parameters
@@ -257,7 +257,7 @@ For implementation details:
 
 ***
 
-###deleteRequest
+### deleteRequest
 When sending requests to friends in Facebook, you are also responsible to delete these requests, once the invitee responds.
 The procedure is explained in Facebook SDK documentation [here](https://developers.facebook.com/docs/games/requests/v2.1#deleting).
 
@@ -280,7 +280,7 @@ For implementation details:
 
 ***
 
-###postScore
+### postScore
 Post score for the user. Note that your app should be classified as a game in Facebook app settings.
 
 >####parameters
@@ -300,7 +300,7 @@ For implementation details:
 
 ***
 
-###getScores
+### getScores
 Gets the score for the user and his/her friends. Note that your app should be classified as a game in Facebook app settings.
 
 >####parameters
@@ -333,7 +333,7 @@ For implementation details:
 
 ***
 
-###graphCall
+### graphCall
 Makes a call to graph API using FB SDK.
 
 >####parameters
@@ -361,7 +361,7 @@ For implementation details:
 ***
 
 
-##Sample App
+## Sample App
 We have a sample cordova app to test the plugin that you can find [here](https://github.com/ccsoft/cordova-sample/tree/facebook). Please note that the link takes you to a dedicated branch named facebook, please use that branch to test this plugin. We use separate branches for each plugin we implement.
 
 Once you download/clone and run the app, you are going to be using a sample Facebook app in sandbox.
@@ -371,10 +371,10 @@ You can change your app settings (in index.html), you can also test the features
 > Pass: 123456
 
 
-##License
+## License
 [Apache 2.0 License](http://www.apache.org/licenses/LICENSE-2.0.html)
 
-##Why another plugin?
+## Why another plugin?
 - Why do we implement another plugin since there is already an official [phonegap-facebook-plugin](https://github.com/phonegap/phonegap-facebook-plugin)?
 1. As of today (16.01.2014), [official cordova facebook plugin](https://github.com/phonegap/phonegap-facebook-plugin) project on GitHub has 985 stars (including mine), 118 watchers, 218 open issues, 29 pull requests and 5 branches.
 2. Last commit as of today to master branch was 3 months ago, we don't have time to wait for fixes and new updates.
